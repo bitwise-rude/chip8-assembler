@@ -1,13 +1,42 @@
 # written by Meyan Adhikari
 import sys
-import constants
+from constants import *
+
+class Token:
+    '''Represent Basic Unit'''
+    def __init__(self,name,line_no,char_no):
+        pass
 
 class Tokenizer:
     def __init__(self,lines:list[str]) -> None:
         self.source_lines = lines 
+        self.tokens = []
 
     def tokenize(self) -> None:
-        pass
+        
+        # go through each line
+        for i in range(len(self.source_lines)):
+            line = self.source_lines[i].upper() # making case insensitive
+
+            # go through each character 
+            for j in range(len(line)):
+                character = line[j]
+
+                # single character check
+                if character == NEW_LINE:
+                    self.tokens.append(Token(NEW_LINE,i,j);
+
+                elif character == COLON:
+                    self.tokens.append(Token(COLON,i,j));
+
+                elif character == COMMENT:
+                    # skip the whole line 
+                    continue
+                
+                # multi character check
+                if character in VALID_CHARACTERS:
+                    pass
+
 
 
 def show_err_and_quit(err:str):
