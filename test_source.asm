@@ -1,7 +1,2 @@
-; test soruce file 
-;
-;
-
-ld a, 4;
-
-
+; this is a cool thing
+MOV ADD
