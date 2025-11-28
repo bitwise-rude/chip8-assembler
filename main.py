@@ -19,6 +19,7 @@ class ErrorManager:
         self.errors.append(f'''{error_message}
                            {line_of_error}
                            {line_description + error_shower}
+{description}
                         ''')
 
     def show_errors(self,_quit=False) -> bool:
@@ -96,7 +97,7 @@ class Tokenizer:
                             break
 
                     is_number = True if len([i for i in buffer if i in VALID_NUMBERS]) == len(buffer) else False
-                    
+
                     self.tokens.append(Token(buffer,line_count, character_start,character_count,is_number))
                 else:
                     self.error_manager.add_error("Unknown Character",line_count,character_count,character_count,"The above character doesn't belong ot the syntax.")
@@ -132,6 +133,7 @@ class Parser:
 
                 # I call the following way, the Ks way of assembling 
                 i = 0 
+                param_count = 0
                 result = 0x0000 | _opcode
 
                 while i < INSTRUCTIONS_BYTES:
@@ -140,7 +142,8 @@ class Parser:
                     if(k=="."):break
                     
                     elif (k == "A"):  # for address
-                        self._get_next_param(tkn_counter) # get the next parameter
+                        self._get_param(tkn_counter,param_count) # get the next parameter
+                        param_count += 1
 
                     # else show an error?
 
@@ -151,19 +154,29 @@ class Parser:
             tkn_counter +=1
         
     # helper functions for parsing
-    def _get_next_param(self,tkn_counter):
-        crnt_token = self.tokens[tkn_counter]
-
-        if (tkn_counter + 1 < len(self.tokens)):
-            pass
-        else:
+    def _get_param(self,tkn_counter,param_counter):
+        def _show_err(des):
             self.error_manager.add_error("Expected a parameter.",
                                          crnt_token.line_no,
                                          crnt_token.char_index_start,
                                          crnt_token.char_index_end,
-                                         f"{crnt_token.name} expects parameter(s)."
+                                         des
                                          )
             self.error_manager.show_errors(_quit = True)
+
+        crnt_token = self.tokens[tkn_counter]
+
+        if (tkn_counter + param_counter + 1 < len(self.tokens)):
+            param_token = self.tokens[tkn_counter + param_counter + 1]
+
+            if param_token.is_number:
+                pass
+            # for variable TODO: implement later
+            else:
+                _show_err(f"'{param_token.name}' is not a valid parameter for '{crnt_token.name}'.")
+        else:
+            _show_err(f"'{crnt_token.name}' expects parameter(s).")
+            
 
 def show_err_and_quit(err:str):
     print("\tch8asm:\nError:\t",err)
