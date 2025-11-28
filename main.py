@@ -30,13 +30,23 @@ class ErrorManager:
 
 class Token:
     '''Represent Basic Unit'''
-    def __init__(self,name:str,line_no:int,char_no:int):
+    def __init__(self,name:str,type:str,line_no:int,char_no:int)->None:
+        '''
+            type:str ->
+            RES - Reserved Keywords
+            VAR - Variables
+        '''
         self.name = name
         self.line_no = line_no
         self.char_no = char_no
+        self.type =  type
       
     def __repr__(self) -> str:
-        return f"NAME:{self.name} "
+        return f"NAME:{self.name} TYPE:{self.type} "
+
+class Parser():
+    def __init__(self,tokens:list[Token]) -> None:
+        self.tokens = tokens
 
 class Tokenizer:
     def __init__(self,error_manager:ErrorManager) -> None:
@@ -88,7 +98,7 @@ class Tokenizer:
                     if len(buffer) > 1:
                         # multi character
                         if buffer in MULTI_CHAR_NAMES.keys():
-                            self.tokens.append(Token(MULTI_CHAR_NAMES[buffer],line_count, character_count))
+                            self.tokens.append(Token(MULTI_CHAR_NAMES[buffer],"RES",line_count, character_count))
 
                             continue
                         else:
@@ -97,7 +107,7 @@ class Tokenizer:
                     else:
                         # single character
                         if buffer in SINGLE_CHAR_NAMES.keys():
-                            self.tokens.append(Token(SINGLE_CHAR_NAMES[character],line_count, character_count))
+                            self.tokens.append(Token(SINGLE_CHAR_NAMES[buffer],"RES",line_count, character_count))
                         else:
                             self.error_manager.add_error("Unknown Name",line_count, character_count,character_count+1, "This name is not registered as part of a valid syntax")
 
@@ -127,13 +137,14 @@ source_lines = read_file_contents(sys.argv[1])
 # error manager
 error_manager = ErrorManager(source_lines)
 
-# tokenizer
+# tokenizer (first pass)
 tokenizer = Tokenizer(error_manager)
 tokenizer.tokenize()
-# print(tokenizer.tokens)
+print(tokenizer.tokens)
 
 # show errors in tokenizing phase
-if not error_manager.show_errors():
+if error_manager.show_errors():
     show_err_and_quit("Syntax Error")
 
-
+# parser (second pass)
+parser = Parser(tokenizer.tokens)

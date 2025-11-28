@@ -1,6 +1,2 @@
-; this is a cool thing
-MOV hol
-
-
-
-asdflkjds
+; this is a comment
+MOV A,B
