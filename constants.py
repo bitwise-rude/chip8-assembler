@@ -18,11 +18,25 @@ VALID_CHARACTERS = string.ascii_lowercase + "_"
 SINGLE_CHAR_NAMES = {"a":"REG_A", "b":"REG_B"}
 MULTI_CHAR_NAMES = {} # 
 
-# DONOT CHANGE THIS, this defines what each instruction do
 
-#INSTRUCTIONS HAVE THE FOLLOWING TEMPLATE
-# KEYS(NAME) : [(arg_lsit), (function_that_returns the opcode)]
 
-INSTRUCTIONS = {'cls':[(),lambda : 0x00E0],
-                "ret": [(), lambda : 0x00EE],
+#####
+#instructions
+
+# INSTRUCTIONS HAVE THE FOLLOWING TEMPLATE
+###
+# R deonts the retrunign opcode
+# A denotes a 3-bit address, as a parameter
+## . denotes skip
+
+# KEYS(NAME) : [(arg_lsit), opcode]
+
+
+INSTRUCTIONS = {'cls':      ("R.",0x00E0),
+                "ret":      ("R.", 0x00EE),
+                "jp" :      ("RA.",0x1000),
                 }
+
+
+# The instructions are always 4 bytes
+INSTRUCTIONS_BYTES = 4

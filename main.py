@@ -14,7 +14,7 @@ class ErrorManager:
         line_of_error = self.source[line_no]
 
         line_description = " " * (char_no_start)
-        error_shower = "^" * (char_no_end - char_no_start)
+        error_shower = "^" * (char_no_end - char_no_start+1)
 
         self.errors.append(f'''{error_message}
                            {line_of_error}
@@ -25,6 +25,7 @@ class ErrorManager:
         if self.errors:
             for error in self.errors:
                 print(error)
+            return True
         else:
             return False
 
@@ -63,10 +64,10 @@ class Tokenizer:
 
                 # single character check
                 if character == NEW_LINE:
-                    self.tokens.append(Token("NEW_LINE",line_count,character_count,character_count))
+                    self.tokens.append(Token("_NEW_LINE",line_count,character_count,character_count))
 
                 elif character == COLON:
-                    self.tokens.append(Token("COLON",line_count,character_count,character_count))
+                    self.tokens.append(Token("_COLON",line_count,character_count,character_count))
 
                 elif character == COMMENT:
                     #skip the whole line 
@@ -116,8 +117,22 @@ class Parser:
             # diff types of tokens 
             if tkns.name in INSTRUCTIONS.keys():
                 # if is an instructions
-                
-                self.add_ins(INSTRUCTIONS[tkns.name][1]())
+                _ins = INSTRUCTIONS[tkns.name]
+                _template = _ins[0]
+                _opcode = _ins[1]
+
+                # I call the following way, the Ks way of assembling 
+                i = 0 
+                result = 0x0000
+
+                while i < INSTRUCTIONS_BYTES:
+                    k = _template[i]
+                    if(k == "R"): result |= _opcode
+                    elif(k=="."):break
+
+                    i+=1;   
+
+                self.add_ins(result)
 
 def show_err_and_quit(err:str):
     print("\tch8asm:\nError:\t",err)
