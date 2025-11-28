@@ -1,7 +1,3 @@
-; this is a comment
-cls ; this can be a comment too
+; a very useless program
 cls
-cls
-cls
-cls
-cls ; clearning screen a billion times
+ret

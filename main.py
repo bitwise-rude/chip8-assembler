@@ -30,20 +30,18 @@ class ErrorManager:
 
 class Token:
     '''Represent Basic Unit'''
-    def __init__(self,name:str,type:str,line_no:int,char_no:int)->None:
+    def __init__(self,name:str,line_no:int,char_index_start:int, char_index_end:int)->None:
         '''
-            type:str ->
-            RES - Reserved Keywords
-            VAR - Variables
-            OTH - Others 
+
         '''
         self.name = name
         self.line_no = line_no
-        self.char_no = char_no
-        self.type =  type
+        self.char_index_start = char_index_start
+        self.char_index_end = char_index_end
+
       
     def __repr__(self) -> str:
-        return f"NAME:{self.name} TYPE:{self.type} "
+        return f"NAME:{self.name} "
 
 
 class Tokenizer:
@@ -65,10 +63,10 @@ class Tokenizer:
 
                 # single character check
                 if character == NEW_LINE:
-                    self.tokens.append(Token("NEW_LINE","OTH",line_count,character_count))
+                    self.tokens.append(Token("NEW_LINE",line_count,character_count,character_count))
 
                 elif character == COLON:
-                    self.tokens.append(Token("COLON","OTH",line_count,character_count))
+                    self.tokens.append(Token("COLON",line_count,character_count,character_count))
 
                 elif character == COMMENT:
                     #skip the whole line 
@@ -83,7 +81,7 @@ class Tokenizer:
                 # multi character check and single character names check
                 elif character in VALID_CHARACTERS:
                     buffer = ""
-                    char_start = character_count
+                    character_start = character_count
                     while character in VALID_CHARACTERS:
                         buffer += character
                         character_count +=1
@@ -93,22 +91,9 @@ class Tokenizer:
                         else:
                             break
 
-                    if len(buffer) > 1:
-                        # multi character
-                        if buffer in MULTI_CHAR_NAMES.keys():
-                            self.tokens.append(Token(MULTI_CHAR_NAMES[buffer],"RES",line_count, character_count))
-
-                            continue
-                        else:
-                            self.error_manager.add_error("Unknown Name",line_count,char_start,character_count, "This name is not registered as part of a valid syntax")
-
-                    else:
-                        # single character
-                        if buffer in SINGLE_CHAR_NAMES.keys():
-                            self.tokens.append(Token(SINGLE_CHAR_NAMES[buffer],"RES",line_count, character_count))
-                        else:
-                            self.error_manager.add_error("Unknown Name",line_count, character_count,character_count+1, "This name is not registered as part of a valid syntax")
-
+                    self.tokens.append(Token(buffer,line_count, character_start,character_count))
+                else:
+                    self.error_manager.add_error("Unknown Character",line_count,character_count,character_count,"The above character doesn't belong ot the syntax.")
 
                 character_count += 1
             line_count +=1
@@ -128,8 +113,11 @@ class Parser:
 
     def parse(self)->None:
         for tkns in self.tokens:
+            # diff types of tokens 
             if tkns.name in INSTRUCTIONS.keys():
-                self.add_ins(INSTRUCTIONS[tkns.name][2]())
+                # if is an instructions
+                
+                self.add_ins(INSTRUCTIONS[tkns.name][1]())
 
 def show_err_and_quit(err:str):
     print("\tch8asm:\nError:\t",err)
