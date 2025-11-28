@@ -1,3 +1,5 @@
 ; a very useless program
-jp 10
-call 10
+
+jmp 255
+call asfd
+ret

@@ -67,12 +67,15 @@ class Tokenizer:
             while character_count < len(line):
                 character = line[character_count]
 
-                # single character check
+                # single character check , TODO: use a loop to do these all 
                 if character == NEW_LINE:
                     self.tokens.append(Token("_NEW_LINE",line_count,character_count,character_count))
 
                 elif character == COLON:
                     self.tokens.append(Token("_COLON",line_count,character_count,character_count))
+                
+                elif character == COMMA:
+                    self.tokens.append(Token("_COMMA",line_count,character_count,character_count))
 
                 elif character == COMMENT:
                     #skip the whole line 
@@ -164,7 +167,7 @@ class Parser:
                                                     tkn.line_no,
                                                     tkn.char_index_start,
                                                     tkn.char_index_end,
-                                                    f"'{tkn.name}' expects an Address (nnn) parameter"
+                                                    f"'{tkn.name}' expects an Address (nnn) parameter. None were provided"
                                                   )
                     # else show an error?
 
@@ -184,8 +187,17 @@ class Parser:
 
             if param_token.is_number:
                 params.append(int(param_token.name))
-            elif param_token.name == "NEW_LINE":
+            elif param_token.name == "_COMMA":
+                pass
+            elif param_token.name == "_NEW_LINE":
                 break
+            # TODO: varaible checking do 
+            # else:
+            #     self.error_manager.add_error("Incorrect Parameter",
+            #                                  param_token.line_no,
+            #                                  param_token.char_index_start,
+            #                                  param_token.char_index_end,
+            #                                  f"'{param_token.name}' is not a valid parameter")
             
             i = i + 1
         return params
@@ -225,4 +237,7 @@ if error_manager.show_errors():
 # parser (second pass)
 parser = Parser(tokenizer.tokens,error_manager)
 parser.parse()
+
+if error_manager.show_errors():
+    show_err_and_quit("Syntax Error")
 print(parser.generated_code.hex(sep="-"))
