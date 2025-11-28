@@ -6,12 +6,19 @@ class ErrorManager:
     def __init__(self,source:list[str]):
         self.source = source
         self.errors = []
+
     def add_error(self,name:str,line_no:int,char_no:int,description:str):
         self.errors.append(f"""Error!
             {name} at {line_no}:{char_no}
             {description}
         """)
-
+    
+    def show_errors(self) -> bool:
+        if self.errors:
+            for error in self.errors:
+                print(error)
+        else:
+            return False
 
 class Token:
     '''Represent Basic Unit'''
@@ -34,7 +41,7 @@ class Tokenizer:
         # go through each line
         line_count = 0
         while line_count < len(self.source_lines):
-            line = self.source_lines[line_count].upper() # making case insensitive
+            line = self.source_lines[line_count].lower() # making case insensitive
             character_count = 0
             # go through each character 
             while character_count < len(line):
@@ -56,21 +63,35 @@ class Tokenizer:
                     # skip the character
                     character_count += 1
                     continue
-                elif character in SINGLE_CHAR_NAMES.keys():
-                    self.tokens.append(Token(SINGLE_CHAR_NAMES[character],line_count, character_count))
-
-                # multi character check
+                
+                # multi character check and single character names check
                 elif character in VALID_CHARACTERS:
                     buffer = ""
-                    while character in VALID_WORDS:
+                    while character in VALID_CHARACTERS:
                         buffer += character
-                    
-                    if buffer in MULTI_CHAR_NAMES.keys():
-                        self.tokens.append(Token(MULTI_CHAR_NAMES[buffer],line_count, character_count))
+                        character_count +=1
+
+                        if character_count < len(line):
+                            character = line[character_count]
+                        else:
+                            break
+
+                    if len(buffer) > 1:
+                        # multi character
+                        if buffer in MULTI_CHAR_NAMES.keys():
+                            self.tokens.append(Token(MULTI_CHAR_NAMES[buffer],line_count, character_count))
+
+                            continue
+                        else:
+                            self.error_manager.add_error("Unknown Name",line_count,character_count, "This name is not registered as part of a valid syntax")
+
                     else:
-                        self.error_manager.add_error("Unknown Name",line_count,character_count, "This name is not registered as part of a valid syntax")
-                else:
-                   self.error_manager.add_error("Unknown Name",line_count, character_count, "This name is not registered as part of a valid syntax")
+                        # single character
+                        if buffer in SINGLE_CHAR_NAMES.keys():
+                            self.tokens.append(Token(SINGLE_CHAR_NAMES[character],line_count, character_count))
+                        else:
+                            self.error_manager.add_error("Unknown Name",line_count, character_count, "This name is not registered as part of a valid syntax")
+
 
                 character_count += 1
             line_count +=1
@@ -100,5 +121,10 @@ error_manager = ErrorManager(source_lines)
 # tokenizer
 tokenizer = Tokenizer(error_manager)
 tokenizer.tokenize()
-print(tokenizer.tokens)
+# print(tokenizer.tokens)
+
+# show errors in tokenizing phase
+if not error_manager.show_errors():
+    show_err_and_quit("Syntax Error")
+
 
