@@ -21,17 +21,20 @@ class ErrorManager:
                            {line_description + error_shower}
                         ''')
 
-    def show_errors(self) -> bool:
+    def show_errors(self,_quit=False) -> bool:
         if self.errors:
             for error in self.errors:
                 print(error)
+            
+            if _quit:
+                show_err_and_quit("Error(s) Occured.")
             return True
         else:
             return False
 
 class Token:
     '''Represent Basic Unit'''
-    def __init__(self,name:str,line_no:int,char_index_start:int, char_index_end:int)->None:
+    def __init__(self,name:str,line_no:int,char_index_start:int, char_index_end:int, isNumber = False)->None:
         '''
 
         '''
@@ -39,10 +42,10 @@ class Token:
         self.line_no = line_no
         self.char_index_start = char_index_start
         self.char_index_end = char_index_end
-
+        self.is_number = isNumber
       
     def __repr__(self) -> str:
-        return f"NAME:{self.name} "
+        return f"NAME:{self.name} IS NUMBER: {self.is_number}"
 
 
 class Tokenizer:
@@ -92,7 +95,9 @@ class Tokenizer:
                         else:
                             break
 
-                    self.tokens.append(Token(buffer,line_count, character_start,character_count))
+                    is_number = True if len([i for i in buffer if i in VALID_NUMBERS]) == len(buffer) else False
+                    
+                    self.tokens.append(Token(buffer,line_count, character_start,character_count,is_number))
                 else:
                     self.error_manager.add_error("Unknown Character",line_count,character_count,character_count,"The above character doesn't belong ot the syntax.")
 
@@ -100,8 +105,9 @@ class Tokenizer:
             line_count +=1
 
 class Parser:
-    def __init__(self,tokens:list[Token]) -> None:
+    def __init__(self,tokens:list[Token],error_manager:ErrorManager) -> None:
         self.tokens = tokens
+        self.error_manager = error_manager
 
         self.generated_code = bytearray()
     
@@ -113,26 +119,51 @@ class Parser:
         self.generated_code.append(lsb)
 
     def parse(self)->None:
-        for tkns in self.tokens:
+        tkn_counter = 0
+        # parsing through all of the token
+        while tkn_counter < len(self.tokens):
+            tkn = self.tokens[tkn_counter]
             # diff types of tokens 
-            if tkns.name in INSTRUCTIONS.keys():
+            if tkn.name in INSTRUCTIONS.keys():
                 # if is an instructions
-                _ins = INSTRUCTIONS[tkns.name]
+                _ins = INSTRUCTIONS[tkn.name]
                 _template = _ins[0]
                 _opcode = _ins[1]
 
                 # I call the following way, the Ks way of assembling 
                 i = 0 
-                result = 0x0000
+                result = 0x0000 | _opcode
 
                 while i < INSTRUCTIONS_BYTES:
                     k = _template[i]
-                    if(k == "R"): result |= _opcode
-                    elif(k=="."):break
+
+                    if(k=="."):break
+                    
+                    elif (k == "A"):  # for address
+                        self._get_next_param(tkn_counter) # get the next parameter
+
+                    # else show an error?
 
                     i+=1;   
 
                 self.add_ins(result)
+            
+            tkn_counter +=1
+        
+    # helper functions for parsing
+    def _get_next_param(self,tkn_counter):
+        crnt_token = self.tokens[tkn_counter]
+
+        if (tkn_counter + 1 < len(self.tokens)):
+            pass
+        else:
+            self.error_manager.add_error("Expected a parameter.",
+                                         crnt_token.line_no,
+                                         crnt_token.char_index_start,
+                                         crnt_token.char_index_end,
+                                         f"{crnt_token.name} expects parameter(s)."
+                                         )
+            self.error_manager.show_errors(_quit = True)
 
 def show_err_and_quit(err:str):
     print("\tch8asm:\nError:\t",err)
@@ -166,6 +197,6 @@ if error_manager.show_errors():
     show_err_and_quit("Syntax Error")
 
 # parser (second pass)
-parser = Parser(tokenizer.tokens)
+parser = Parser(tokenizer.tokens,error_manager)
 parser.parse()
 print(parser.generated_code)

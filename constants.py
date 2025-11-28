@@ -8,7 +8,8 @@ NEW_LINE = "\n"
 SPACE  = " "
 COLON = ":"
 COMMENT = ";"
-VALID_CHARACTERS = string.ascii_lowercase + "_"
+VALID_NUMBERS = "0123456789"
+VALID_CHARACTERS = string.ascii_lowercase + "_" + VALID_NUMBERS
 
 ######
 # names
@@ -32,9 +33,9 @@ MULTI_CHAR_NAMES = {} #
 # KEYS(NAME) : [(arg_lsit), opcode]
 
 
-INSTRUCTIONS = {'cls':      ("R.",0x00E0),
-                "ret":      ("R.", 0x00EE),
-                "jp" :      ("RA.",0x1000),
+INSTRUCTIONS = {'cls':      (".",0x00E0),
+                "ret":      (".", 0x00EE),
+                "jp" :      ("A.",0x1000),
                 }
 
 
