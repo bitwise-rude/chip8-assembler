@@ -59,6 +59,7 @@ class Tokenizer:
     def tokenize(self) -> None:
         # go through each line
         line_count = 0
+    
         while line_count < len(self.source_lines):
             line = self.source_lines[line_count].lower() # making case insensitive
             character_count = 0
@@ -112,6 +113,15 @@ class Parser:
 
         self.generated_code = bytearray()
     
+    # def _show_err(des):
+    #         self.error_manager.add_error("Expected a parameter.",
+    #                                      crnt_token.line_no,
+    #                                      crnt_token.char_index_start,
+    #                                      crnt_token.char_index_end,
+    #                                      des
+    #                                      )
+    #         self.error_manager.show_errors(_quit = True)
+    
     def add_ins(self,ins:int):
         lsb = ins & 0x00FF
         msb = (ins&0xFF00) >> 8
@@ -133,18 +143,28 @@ class Parser:
 
                 # I call the following way, the Ks way of assembling 
                 i = 0 
-                param_count = 0
                 result = 0x0000 | _opcode
 
+                params = self._get_param(tkn_counter)  # get paramter
+                params.reverse() # done for convinience sake
+            
                 while i < INSTRUCTIONS_BYTES:
                     k = _template[i]
 
                     if(k=="."):break
                     
                     elif (k == "A"):  # for address
-                        self._get_param(tkn_counter,param_count) # get the next parameter
-                        param_count += 1
-
+                        # for A we need (nnn)
+                        if (len(params)>0):
+                            nnn = params.pop() & 0x0FFF # getting those nnn only
+                            result |=nnn
+                        else:
+                            error_manager.add_error("Expected a parameter",
+                                                    tkn.line_no,
+                                                    tkn.char_index_start,
+                                                    tkn.char_index_end,
+                                                    f"'{tkn.name}' expects an Address (nnn) parameter"
+                                                  )
                     # else show an error?
 
                     i+=1;   
@@ -154,28 +174,20 @@ class Parser:
             tkn_counter +=1
         
     # helper functions for parsing
-    def _get_param(self,tkn_counter,param_counter):
-        def _show_err(des):
-            self.error_manager.add_error("Expected a parameter.",
-                                         crnt_token.line_no,
-                                         crnt_token.char_index_start,
-                                         crnt_token.char_index_end,
-                                         des
-                                         )
-            self.error_manager.show_errors(_quit = True)
+    def _get_param(self,tkn_counter) -> list[Token]:
+        params = []
+        i = 0
 
-        crnt_token = self.tokens[tkn_counter]
-
-        if (tkn_counter + param_counter + 1 < len(self.tokens)):
-            param_token = self.tokens[tkn_counter + param_counter + 1]
+        while (tkn_counter  + i + 1 < len(self.tokens)):
+            param_token = self.tokens[tkn_counter  + 1]
 
             if param_token.is_number:
-                pass
-            # for variable TODO: implement later
-            else:
-                _show_err(f"'{param_token.name}' is not a valid parameter for '{crnt_token.name}'.")
-        else:
-            _show_err(f"'{crnt_token.name}' expects parameter(s).")
+                params.append(int(param_token.name))
+            elif param_token.name == "NEW_LINE":
+                break
+            
+            i = i + 1
+        return params
             
 
 def show_err_and_quit(err:str):
