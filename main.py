@@ -7,12 +7,20 @@ class ErrorManager:
         self.source = source
         self.errors = []
 
-    def add_error(self,name:str,line_no:int,char_no:int,description:str):
-        self.errors.append(f"""Error!
-            {name} at {line_no}:{char_no}
-            {description}
-        """)
-    
+    def add_error(self,name:str,line_no:int,char_no_start:int,char_no_end:int,description:str):
+        error_message = f"""
+            {name} at {line_no+1}:{char_no_start+1}"""
+        
+        line_of_error = self.source[line_no]
+
+        line_description = " " * (char_no_start)
+        error_shower = "^" * (char_no_end - char_no_start)
+
+        self.errors.append(f'''{error_message}
+                           {line_of_error}
+                           {line_description + error_shower}
+                        ''')
+
     def show_errors(self) -> bool:
         if self.errors:
             for error in self.errors:
@@ -67,6 +75,7 @@ class Tokenizer:
                 # multi character check and single character names check
                 elif character in VALID_CHARACTERS:
                     buffer = ""
+                    char_start = character_count
                     while character in VALID_CHARACTERS:
                         buffer += character
                         character_count +=1
@@ -83,14 +92,14 @@ class Tokenizer:
 
                             continue
                         else:
-                            self.error_manager.add_error("Unknown Name",line_count,character_count, "This name is not registered as part of a valid syntax")
+                            self.error_manager.add_error("Unknown Name",line_count,char_start,character_count, "This name is not registered as part of a valid syntax")
 
                     else:
                         # single character
                         if buffer in SINGLE_CHAR_NAMES.keys():
                             self.tokens.append(Token(SINGLE_CHAR_NAMES[character],line_count, character_count))
                         else:
-                            self.error_manager.add_error("Unknown Name",line_count, character_count, "This name is not registered as part of a valid syntax")
+                            self.error_manager.add_error("Unknown Name",line_count, character_count,character_count+1, "This name is not registered as part of a valid syntax")
 
 
                 character_count += 1
