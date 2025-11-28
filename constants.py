@@ -42,7 +42,7 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
                 "jmpa":     ("A.",0xB000,       "Jump to location address + V0."),
                 "ld_i":     ("A.", 0xA000,      "The value of register I is set to nnn."),
 
-                "SE":       ("XK.", 0x3000,     "Skip next instruction if Vx = kk.")
+                "se":       ("XKk.", 0x3000,     "Skip next instruction if Vx = kk.")
                 }
 
 

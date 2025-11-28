@@ -103,6 +103,7 @@ class Tokenizer:
                     is_number = True if len([i for i in buffer if i in VALID_NUMBERS]) == len(buffer) else False
 
                     self.tokens.append(Token(buffer,line_count, character_start,character_count,is_number))
+                    continue
                 else:
                     self.error_manager.add_error("Unknown Character",line_count,character_count,character_count,"The above character doesn't belong ot the syntax.")
 
@@ -169,6 +170,33 @@ class Parser:
                                                     tkn.char_index_end,
                                                     f"'{tkn.name}' expects an Address (nnn) parameter. None were provided"
                                                   )
+                    elif (k == "X"):
+                        # X is a single nibble
+                        if (len(params)>0):
+                            x = params.pop() & 0x000F # getting those X only
+                            # i denots the position, actually i+1 does since 1st is always constant
+                            result |= (x<<(((2-i))*4))
+                        else:
+                            error_manager.add_error("Expected a parameter",
+                                                    tkn.line_no,
+                                                    tkn.char_index_start,
+                                                    tkn.char_index_end,
+                                                    f"'{tkn.name}' expects an Address (nnn) parameter. None were provided"
+                                                  )
+                    elif (k == "K"):
+                        # K is a single byte
+                        if (len(params)>0):
+                            x = params.pop() & 0x00FF # getting those kk only
+                            # i denots the position, actually i+1 does since 1st is always constant
+
+                            result |= (x<<(((1-i))*4))
+                        else:
+                            error_manager.add_error("Expected a parameter",
+                                                    tkn.line_no,
+                                                    tkn.char_index_start,
+                                                    tkn.char_index_end,
+                                                    f"'{tkn.name}' expects an Address (nnn) parameter. None were provided"
+                                                  )
                     # else show an error?
 
                     i+=1;   
@@ -183,7 +211,7 @@ class Parser:
         i = 0
 
         while (tkn_counter  + i + 1 < len(self.tokens)):
-            param_token = self.tokens[tkn_counter  + 1]
+            param_token = self.tokens[tkn_counter  + i + 1]
 
             if param_token.is_number:
                 params.append(int(param_token.name))
@@ -200,6 +228,7 @@ class Parser:
             #                                  f"'{param_token.name}' is not a valid parameter")
             
             i = i + 1
+
         return params
             
 
