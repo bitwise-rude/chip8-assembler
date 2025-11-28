@@ -147,6 +147,7 @@ class Parser:
 
                 params = self._get_param(tkn_counter)  # get paramter
                 params.reverse() # done for convinience sake
+                # TODO: check if paramters are more than needed (maybe a third pass for warnings?)
             
                 while i < INSTRUCTIONS_BYTES:
                     k = _template[i]
@@ -157,7 +158,6 @@ class Parser:
                         # for A we need (nnn)
                         if (len(params)>0):
                             nnn = params.pop() & 0x0FFF # getting those nnn only
-                            print(hex(nnn | result))
                             result |=nnn
                         else:
                             error_manager.add_error("Expected a parameter",
@@ -225,4 +225,4 @@ if error_manager.show_errors():
 # parser (second pass)
 parser = Parser(tokenizer.tokens,error_manager)
 parser.parse()
-print(parser.generated_code)
+print(parser.generated_code.hex(sep="-"))

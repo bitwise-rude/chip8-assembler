@@ -1,2 +1,3 @@
 ; a very useless program
-jp 4096
+jp 10
+call 10

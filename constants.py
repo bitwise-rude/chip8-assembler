@@ -33,9 +33,12 @@ MULTI_CHAR_NAMES = {} #
 # KEYS(NAME) : [(arg_lsit), opcode]
 
 
-INSTRUCTIONS = {'cls':      (".",0x00E0),
-                "ret":      (".", 0x00EE),
-                "jp" :      ("A.",0x1000),
+INSTRUCTIONS = {'cls':      (".",0x00E0,    "Clear the display."),
+                "ret":      (".", 0x00EE,   "Return from a subroutine."),
+                "jmp" :      ("A.",0x1000,   "Jump to location nnn."),
+                "call":     ("A.",0x2000,   "Call subroutine at nnn."),
+                "jmpa":     ("A.",0xB000,   "Jump to location address + V0."),
+                "ld_i":     ("A.", 0xA000,  "The value of register I is set to nnn."),
                 }
 
 
