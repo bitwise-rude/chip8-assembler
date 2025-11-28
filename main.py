@@ -35,6 +35,7 @@ class Token:
             type:str ->
             RES - Reserved Keywords
             VAR - Variables
+            OTH - Others 
         '''
         self.name = name
         self.line_no = line_no
@@ -44,9 +45,6 @@ class Token:
     def __repr__(self) -> str:
         return f"NAME:{self.name} TYPE:{self.type} "
 
-class Parser():
-    def __init__(self,tokens:list[Token]) -> None:
-        self.tokens = tokens
 
 class Tokenizer:
     def __init__(self,error_manager:ErrorManager) -> None:
@@ -67,10 +65,10 @@ class Tokenizer:
 
                 # single character check
                 if character == NEW_LINE:
-                    self.tokens.append(Token("NEW_LINE",line_count,character_count))
+                    self.tokens.append(Token("NEW_LINE","OTH",line_count,character_count))
 
                 elif character == COLON:
-                    self.tokens.append(Token("COLON",line_count,character_count))
+                    self.tokens.append(Token("COLON","OTH",line_count,character_count))
 
                 elif character == COMMENT:
                     #skip the whole line 
@@ -115,6 +113,24 @@ class Tokenizer:
                 character_count += 1
             line_count +=1
 
+class Parser:
+    def __init__(self,tokens:list[Token]) -> None:
+        self.tokens = tokens
+
+        self.generated_code = bytearray()
+    
+    def add_ins(self,ins:int):
+        lsb = ins & 0x00FF
+        msb = (ins&0xFF00) >> 8
+
+        self.generated_code.append(msb)
+        self.generated_code.append(lsb)
+
+    def parse(self)->None:
+        for tkns in self.tokens:
+            if tkns.name in INSTRUCTIONS.keys():
+                self.add_ins(INSTRUCTIONS[tkns.name][2]())
+
 def show_err_and_quit(err:str):
     print("\tch8asm:\nError:\t",err)
     quit()
@@ -148,3 +164,5 @@ if error_manager.show_errors():
 
 # parser (second pass)
 parser = Parser(tokenizer.tokens)
+parser.parse()
+print(parser.generated_code)

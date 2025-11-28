@@ -1,2 +1,7 @@
 ; this is a comment
-MOV A,B
+cls ; this can be a comment too
+cls
+cls
+cls
+cls
+cls ; clearning screen a billion times
