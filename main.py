@@ -157,6 +157,7 @@ class Parser:
                         # for A we need (nnn)
                         if (len(params)>0):
                             nnn = params.pop() & 0x0FFF # getting those nnn only
+                            print(hex(nnn | result))
                             result |=nnn
                         else:
                             error_manager.add_error("Expected a parameter",

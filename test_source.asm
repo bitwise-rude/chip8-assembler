@@ -1,4 +1,2 @@
 ; a very useless program
-cls
-ret
-jp 5
+jp 4096
