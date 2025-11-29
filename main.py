@@ -100,7 +100,7 @@ class Tokenizer:
                 elif character in VALID_CHARACTERS:
                     buffer = ""
                     character_start = character_count
-                    while character in VALID_CHARACTERS+" ":
+                    while character in VALID_CHARACTERS+" " or character in VALID_CHARACTERS+VALID_NUMBERS:
                         buffer += character
                         character_count +=1
 
