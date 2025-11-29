@@ -101,7 +101,12 @@ class Tokenizer:
                     buffer = ""
                     character_start = character_count
                     while character in VALID_CHARACTERS+" " or character in VALID_CHARACTERS+VALID_NUMBERS:
-                        buffer += character
+                        # no more than one whitespace TODO: fix this system
+                        if buffer:
+                            if not (buffer[-1] == " " and character == " "):
+                                buffer += character
+                        else:
+                            buffer += character
                         character_count +=1
 
                         if character_count < len(line):

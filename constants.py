@@ -45,10 +45,9 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
                 "jmp v0":     ("A.",0xB000,       "Jump to location address + V0."),
                 "ld i":     ("A.", 0xA000,      "The value of register I is set to nnn."),
 
-                "se, ^":       ("sKk.", 0x3000,     "Skip next instruction if Vx = kk."),
-                # "sne":       ("XKk.", 0x4000,     "Skip next instruction if Vx != kk."),
-                # # TODO: one with registers
-                # "ld":       ("XKk.", 0x6000,     "The interpreter puts the value kk into register Vx."),
+                "se ^":       ("sKk.", 0x3000,     "Skip next instruction if Vx = kk."),
+                "sne ^":       ("sKk.", 0x4000,     "Skip next instruction if Vx != kk."),
+                "ld ^":       ("sKk.", 0x6000,     "The interpreter puts the value kk into register Vx."),
 
                 }
 
