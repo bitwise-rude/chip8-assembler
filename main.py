@@ -7,7 +7,12 @@ class ErrorManager:
         self.source = source
         self.errors = []
 
-    def add_error(self,name:str,line_no:int,char_no_start:int,char_no_end:int,description:str):
+    def add_error(self,
+                  name:str,
+                  line_no:int,
+                  char_no_start:int,
+                  char_no_end:int,
+                  description:str) -> None:
         error_message = f"""
             {name} at {line_no+1}:{char_no_start+1}"""
         
@@ -35,7 +40,11 @@ class ErrorManager:
 
 class Token:
     '''Represent Basic Unit'''
-    def __init__(self,name:str,line_no:int,char_index_start:int, char_index_end:int, isNumber = False)->None:
+    def __init__(self,name:str,
+                 line_no:int,
+                 char_index_start:int,
+                   char_index_end:int, 
+                   isNumber = False)->None:
         '''
 
         '''
@@ -91,7 +100,7 @@ class Tokenizer:
                 elif character in VALID_CHARACTERS:
                     buffer = ""
                     character_start = character_count
-                    while character in VALID_CHARACTERS:
+                    while character in VALID_CHARACTERS+" ":
                         buffer += character
                         character_count +=1
 
@@ -100,9 +109,30 @@ class Tokenizer:
                         else:
                             break
 
-                    is_number = True if len([i for i in buffer if i in VALID_NUMBERS]) == len(buffer) else False
+                    self.tokens.append(Token(buffer.strip(),
+                                             line_count, 
+                                             character_start,
+                                             character_count))
+                    continue
 
-                    self.tokens.append(Token(buffer,line_count, character_start,character_count,is_number))
+                elif character in VALID_NUMBERS:
+                    buffer = ""
+                    character_start = character_count
+                    while character in VALID_NUMBERS:
+                        buffer += character
+                        character_count +=1
+
+                        if character_count < len(line):
+                            character = line[character_count]
+                        else:
+                            break
+
+
+                    self.tokens.append(Token(buffer,
+                                             line_count, 
+                                             character_start,
+                                             character_count,
+                                             isNumber=True))
                     continue
                 else:
                     self.error_manager.add_error("Unknown Character",line_count,character_count,character_count,"The above character doesn't belong ot the syntax.")
@@ -139,6 +169,7 @@ class Parser:
         while tkn_counter < len(self.tokens):
             tkn = self.tokens[tkn_counter]
             # diff types of tokens 
+            print(tkn.name)
             if tkn.name in INSTRUCTIONS.keys():
                 # if is an instructions
                 _ins = INSTRUCTIONS[tkn.name]
@@ -176,6 +207,7 @@ class Parser:
                             x = params.pop() & 0x000F # getting those X only
                             # i denots the position, actually i+1 does since 1st is always constant
                             result |= (x<<(((2-i))*4))
+                            print("RES",result)
                         else:
                             error_manager.add_error("Expected a parameter",
                                                     tkn.line_no,
@@ -202,7 +234,6 @@ class Parser:
                     # else show an error?
 
                     i+=1;   
-
                 self.add_ins(result)
             
             tkn_counter +=1

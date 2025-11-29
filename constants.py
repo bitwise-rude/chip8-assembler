@@ -10,7 +10,7 @@ COLON = ":"
 COMMENT = ";"
 COMMA = ","
 VALID_NUMBERS = "0123456789"
-VALID_CHARACTERS = string.ascii_lowercase + "_" + VALID_NUMBERS
+VALID_CHARACTERS = string.ascii_lowercase + "_"
 
 ######
 # names
@@ -40,7 +40,7 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
                 "jmp" :      ("A.",0x1000,      "Jump to location nnn."),
                 "call":     ("A.",0x2000,       "Call subroutine at nnn."),
                 "jmpa":     ("A.",0xB000,       "Jump to location address + V0."),
-                "ld_i":     ("A.", 0xA000,      "The value of register I is set to nnn."),
+                "ld i":     ("A.", 0xA000,      "The value of register I is set to nnn."),
 
                 "se":       ("XKk.", 0x3000,     "Skip next instruction if Vx = kk."),
                 "sne":       ("XKk.", 0x4000,     "Skip next instruction if Vx != kk."),
