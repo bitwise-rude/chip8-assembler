@@ -181,8 +181,9 @@ class Parser:
                                                     tkn.line_no,
                                                     tkn.char_index_start,
                                                     tkn.char_index_end,
-                                                    f"'{tkn.name}' expects an Address (nnn) parameter. None were provided"
+                                                    f"'{tkn.name}' expects an Register (x) parameter. None were provided"
                                                   )
+                           
                     elif (k == "K"):
                         # K is a single byte
                         if (len(params)>0):
@@ -195,8 +196,9 @@ class Parser:
                                                     tkn.line_no,
                                                     tkn.char_index_start,
                                                     tkn.char_index_end,
-                                                    f"'{tkn.name}' expects an Address (nnn) parameter. None were provided"
+                                                    f"'{tkn.name}' expects an immediate value parameter (kk). None were provided"
                                                   )
+                           
                     # else show an error?
 
                     i+=1;   
@@ -268,5 +270,5 @@ parser = Parser(tokenizer.tokens,error_manager)
 parser.parse()
 
 if error_manager.show_errors():
-    show_err_and_quit("Syntax Error")
+    show_err_and_quit("Parsing Error")
 print(parser.generated_code.hex(sep="-"))
