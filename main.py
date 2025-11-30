@@ -13,6 +13,7 @@ class Token:
     type:str
 
 class ErrorManager:
+    '''Shows Error, its type and description neatly'''
     def __init__(self,source:list[str]):
         self.source = source
         self.errors = []
@@ -21,6 +22,7 @@ class ErrorManager:
                   name:str,
                   token:Token,
                   description:str) -> None:
+        '''Adds error to an error buffer'''
         
         error_message = f"""
             {name} at {token.line_no+1}:{token.char_no_start+1}"""
@@ -36,7 +38,12 @@ class ErrorManager:
 {description}
                         ''')
 
-    def show_errors(self,_quit=False) -> bool:
+    def show_errors(self,_quit:bool=False) -> bool:
+        '''
+            Shows all the errors stored in the buffer
+            quit:bool -> to quit the program if error or not
+        '''
+
         if self.errors:
             for error in self.errors:
                 print(error)
@@ -49,6 +56,12 @@ class ErrorManager:
         
 
 class Tokenizer:
+    '''
+        Tokenizer or Lexer produces lexemes or Toknes
+        which are assembler interpretation of the code
+        and its attributes
+    '''
+
     def __init__(self,error_manager:ErrorManager) -> None:
         self.source_lines = error_manager.source 
         self.tokens = []
@@ -57,6 +70,7 @@ class Tokenizer:
         
 
     def tokenize(self) -> None:
+        '''Main tokenizing method'''
         # go through each line
         line_count = 0
     
@@ -138,22 +152,19 @@ class Tokenizer:
             line_count +=1
 
 class Parser:
+    '''Parses tokens into suitable machine codes'''
+
     def __init__(self,tokens:list[Token],error_manager:ErrorManager) -> None:
         self.tokens = tokens
         self.error_manager = error_manager
 
-        self.generated_code = bytearray()
+        self.generated_code = bytearray() # final machine code will be here
     
-    # def _show_err(des):
-    #         self.error_manager.add_error("Expected a parameter.",
-    #                                      crnt_token.line_no,
-    #                                      crnt_token.char_index_start,
-    #                                      crnt_token.char_index_end,
-    #                                      des
-    #                                      )
-    #         self.error_manager.show_errors(_quit = True)
-    
-    def add_ins(self,ins:int):
+    def add_ins(self,ins:int) -> None:
+        '''
+            Converts `ins` a 2 byte instruction to the bytearray
+            by seperating into LSB and MSB
+        '''
         lsb = ins & 0x00FF
         msb = (ins&0xFF00) >> 8
 
@@ -161,6 +172,10 @@ class Parser:
         self.generated_code.append(lsb)
 
     def parse(self)->None:
+        '''
+            Main parsing method
+        '''
+
         tkn_counter = 0
         # parsing through all of the token
         while tkn_counter < len(self.tokens):
@@ -278,6 +293,9 @@ class Parser:
             
 
 def show_err_and_quit(err:str):
+    '''
+        Prints error `err` and quits.
+    '''
     print("\tch8asm:\nError:\t",err)
     quit()
 
