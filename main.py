@@ -12,8 +12,6 @@ class Token:
     char_index_end:int
     type:str
 
-
-
 class ErrorManager:
     def __init__(self,source:list[str]):
         self.source = source
@@ -50,8 +48,6 @@ class ErrorManager:
             return False
         
 
-
-
 class Tokenizer:
     def __init__(self,error_manager:ErrorManager) -> None:
         self.source_lines = error_manager.source 
@@ -67,30 +63,30 @@ class Tokenizer:
         while line_count < len(self.source_lines):
             line = self.source_lines[line_count].lower() # making case insensitive
             character_count = 0
+
             # go through each character 
             while character_count < len(line):
                 character = line[character_count]
 
-                # single character check , TODO: use a loop to do these all 
-                if character == NEW_LINE:
-                    self.tokens.append(Token("_NEW_LINE",line_count,character_count,character_count))
+                if character in SINGLE_CHARACTER_TOKENS.keys():
+                    # special cases are comments and spaces which need to be discarded
+                    tkn_name = SINGLE_CHARACTER_TOKENS[character]
 
-                elif character == COLON:
-                    self.tokens.append(Token("_COLON",line_count,character_count,character_count))
+                    if tkn_name == "_COMMENT": # comments
+                        #skip the whole line 
+                        character_count = len(line)
+                        continue
                 
-                elif character == COMMA:
-                    self.tokens.append(Token("_COMMA",line_count,character_count,character_count))
-
-                elif character == COMMENT:
-                    #skip the whole line 
-                    character_count = len(line)
-                    continue
-                
-                elif character == SPACE:
-                    # skip the character
-                    character_count += 1
-                    continue
-                
+                    elif tkn_name == "_SPACE": # spaces
+                        # skip the character
+                        character_count += 1
+                        continue
+                    
+                    self.tokens.append(Token(tkn_name,
+                                       line_count,
+                                       character_count,
+                                       character_count)) # since single character
+                      
                 # multi character check and single character names check
                 elif character in VALID_CHARACTERS:
                     buffer = ""

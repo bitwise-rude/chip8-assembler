@@ -4,15 +4,16 @@ import string
 #######
 # tokens
 
-NEW_LINE = "\n"
-SPACE  = " "
-COLON = ":"
-COMMENT = ";"
-COMMA = ","
+SINGLE_CHARACTER_TOKENS  = {    "\n":"_NEW_LINE",
+                                " " :"_SPACE",
+                                ":" : "_COMMENT",
+                                "," : "_COMMA",
+                            }
+
 VALID_NUMBERS = "0123456789"
 VALID_CHARACTERS = string.ascii_lowercase + "_"
 
-REGISTERS = ["v"+hex(i)[2:] for i in range(0,16)] # resiters v0 to vF
+REGISTERS = ["v"+hex(i)[2:] for i in range(0,16)] # v0, v1,...vf
 
 
 #####
