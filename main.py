@@ -206,9 +206,11 @@ class Parser:
                 if i ==1:
                     tkn_name = tkn_name[:-1] 
 
-                #TODO: check if exist
+                #TODO: check if exist, TODO remove this?
                 if tkn_name in INSTRUCTIONS.keys():
-                    _ins = INSTRUCTIONS[tkn_name]   
+                    _ins = INSTRUCTIONS[tkn_name]  
+                elif tkn.name in INSTRUCTIONS.keys():
+                    _ins = INSTRUCTIONS[tkn.name] 
                 else:
                     self.error_manager.add_error("Invalid Paramter",
                                                  p,
@@ -224,7 +226,8 @@ class Parser:
                 i = 0 
                 result = 0x0000 | _opcode
 
-                
+                # print(_template,hex(_opcode))
+                # quit()
                 # params.reverse() # done for convinience sake
                 # TODO: check if paramters are more than needed (maybe a third pass for warnings?)
             

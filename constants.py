@@ -34,7 +34,7 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
 
                 "jmp" :      ("A.",0x1000,      "Jump to location nnn."),
                 "call":     ("A.",0x2000,       "Call subroutine at nnn."),
-                # "se ^":       ("sKk.", 0x3000,     "Skip next instruction if Vx = kk."),
+                "se":       ("xKk.", 0x3000,     "Skip next instruction if Vx = kk."),
                 # "sne ^":       ("sKk.", 0x4000,     "Skip next instruction if Vx != kk."),
 
                 "jmp v0":     ("A.",0xB000,       "Jump to location address + V0."),
@@ -46,6 +46,7 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
                 }
 
 # the following code increases tee above dictionary to contain all the register info:
+# TODO TODO TODO make it cool
 # to_pop = []
 # to_update = []
 # for ins in INSTRUCTIONS.keys():
@@ -64,7 +65,7 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
 #      INSTRUCTIONS.update(update)
      
 # for ins in to_pop:
-#         INSTRUCTIONS.pop(ins)
+#         INSTRUCTIONS.update({ins.replace("^","").strip():""})
 
 
 # The instructions are always 4 bytes
