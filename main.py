@@ -324,7 +324,8 @@ class Parser:
                 param_token.type = "NUMBER"
                 params.append(param_token)
 
-            # TODO: varaible checking do 
+            # TODO: varaible checking do  
+            # TODO: ERROR
        
             
             i += 1
