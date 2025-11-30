@@ -228,7 +228,7 @@ class Parser:
 
                 # print(_template,hex(_opcode))
                 # quit()
-                # params.reverse() # done for convinience sake
+                params.reverse() # done for convinience sake
                 # TODO: check if paramters are more than needed (maybe a third pass for warnings?)
             
                 while i < INSTRUCTIONS_BYTES:
@@ -239,7 +239,7 @@ class Parser:
                     elif (k == "A"):  # for address
                         # for A we need (nnn)
                         if (len(params)>0):
-                            nnn = params.pop() & 0x0FFF # getting those nnn only
+                            nnn = int(params.pop().name) & 0x0FFF # getting those nnn only
                             result |=nnn
                         else:
                             error_manager.add_error("Expected a parameter",
@@ -248,35 +248,45 @@ class Parser:
                                                     tkn.char_index_end,
                                                     f"'{tkn.name}' expects an Address (nnn) parameter. None were provided"
                                                   )
+                            
+                            break
                     elif (k == "X"):
-                        # X is a single nibble
+                        # X is a single nibble for a register
                         if (len(params)>0):
-                            x = params.pop() & 0x000F # getting those X only
+                            x = params.pop()
+                        
+                            # could be register or a number
+                         
+                            if x.type == "REGISTER":
+                                print(x.name)
+                                t = REGISTERS.index(x.name)
+                            elif x.type == "NUMBER":
+                                t = int(x.name) &  0x000F
+                            # & 0x000F # getting those X only
                             # i denots the position, actually i+1 does since 1st is always constant
-                            result |= (x<<(((2-i))*4))
+                            result |= (t<<(((2-i))*4))
                             print("RES",result)
                         else:
                             error_manager.add_error("Expected a parameter",
-                                                    tkn.line_no,
-                                                    tkn.char_index_start,
-                                                    tkn.char_index_end,
+                                                    tkn,
                                                     f"'{tkn.name}' expects an Register (x) parameter. None were provided"
                                                   )
-                           
+                            break
+                            
                     elif (k == "K"):
                         # K is a single byte
                         if (len(params)>0):
-                            x = params.pop() & 0x00FF # getting those kk only
+                            x = int(params.pop().name) & 0x00FF # getting those kk only
                             # i denots the position, actually i+1 does since 1st is always constant
 
                             result |= (x<<(((1-i))*4))
                         else:
                             error_manager.add_error("Expected a parameter",
-                                                    tkn.line_no,
-                                                    tkn.char_index_start,
-                                                    tkn.char_index_end,
+                                                    tkn,
                                                     f"'{tkn.name}' expects an immediate value parameter (kk). None were provided"
                                                   )
+                            break
+                            
                            
                     # else show an error?
 
@@ -310,6 +320,9 @@ class Parser:
                 self.error_manager.add_error(f"Invalid Paramter",
                                             param_token,
                                             f"'{param_token.name}' isn't a valid parameter")
+                param_token.name = "1"
+                param_token.type = "NUMBER"
+                params.append(param_token)
 
             # TODO: varaible checking do 
        

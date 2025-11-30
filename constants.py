@@ -34,7 +34,7 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
 
                 "jmp" :      ("A.",0x1000,      "Jump to location nnn."),
                 "call":     ("A.",0x2000,       "Call subroutine at nnn."),
-                "se":       ("xKk.", 0x3000,     "Skip next instruction if Vx = kk."),
+                "se":       ("XKk.", 0x3000,     "Skip next instruction if Vx = kk."),
                 # "sne ^":       ("sKk.", 0x4000,     "Skip next instruction if Vx != kk."),
 
                 "jmp v0":     ("A.",0xB000,       "Jump to location address + V0."),
