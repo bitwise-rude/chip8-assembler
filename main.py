@@ -64,10 +64,10 @@ class Tokenizer:
             line = self.source_lines[line_count].lower() # making case insensitive
             character_count = 0
 
-            # go through each character 
             while character_count < len(line):
                 character = line[character_count]
 
+                # single character keywords check 
                 if character in SINGLE_CHARACTER_TOKENS.keys():
                     # special cases are comments and spaces which need to be discarded
                     tkn_name = SINGLE_CHARACTER_TOKENS[character]
@@ -85,12 +85,14 @@ class Tokenizer:
                     self.tokens.append(Token(tkn_name,
                                        line_count,
                                        character_count,
-                                       character_count)) # since single character
+                                       character_count,
+                                       "KEYWORD")) # since single character
                       
                 # multi character check and single character names check
                 elif character in VALID_CHARACTERS:
                     buffer = ""
                     character_start = character_count
+
                     while character in VALID_CHARACTERS+VALID_NUMBERS:          
                         buffer += character
                         character_count +=1
@@ -103,7 +105,29 @@ class Tokenizer:
                     self.tokens.append(Token(buffer.strip(),
                                              line_count, 
                                              character_start,
-                                             character_count))
+                                             character_count,
+                                             "NAME"))
+                    continue
+
+                # numbers check
+                elif character in VALID_NUMBERS:
+                    buffer = ""
+                    character_start = character_count
+
+                    while character in VALID_NUMBERS:          
+                        buffer += character
+                        character_count +=1
+
+                        if character_count < len(line):
+                            character = line[character_count]
+                        else:
+                            break
+
+                    self.tokens.append(Token(buffer.strip(),
+                                             line_count, 
+                                             character_start,
+                                             character_count,
+                                             "NUMBER"))
                     continue
 
                 
