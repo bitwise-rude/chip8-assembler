@@ -1,6 +1,18 @@
 # written by Meyan Adhikari
 import sys
 from constants import *
+from dataclasses import dataclass
+
+@dataclass
+class Token:
+    '''Represent Basic Unit'''
+    name:str
+    line_no:int
+    char_index_start:int
+    char_index_end:int
+    type:str
+
+
 
 class ErrorManager:
     def __init__(self,source:list[str]):
@@ -9,17 +21,16 @@ class ErrorManager:
 
     def add_error(self,
                   name:str,
-                  line_no:int,
-                  char_no_start:int,
-                  char_no_end:int,
+                  token:Token,
                   description:str) -> None:
-        error_message = f"""
-            {name} at {line_no+1}:{char_no_start+1}"""
         
-        line_of_error = self.source[line_no]
+        error_message = f"""
+            {name} at {token.line_no+1}:{token.char_no_start+1}"""
+        
+        line_of_error = self.source[token.line_no]
 
-        line_description = " " * (char_no_start)
-        error_shower = "^" * (char_no_end - char_no_start+1)
+        line_description = " " * (token.char_no_start)
+        error_shower = "^" * (token.char_no_end - token.char_no_start+1)
 
         self.errors.append(f'''{error_message}
                            {line_of_error}
@@ -37,25 +48,8 @@ class ErrorManager:
             return True
         else:
             return False
+        
 
-class Token:
-    '''Represent Basic Unit'''
-    def __init__(self,name:str,
-                 line_no:int,
-                 char_index_start:int,
-                   char_index_end:int, 
-                   isNumber = False)->None:
-        '''
-
-        '''
-        self.name = name
-        self.line_no = line_no
-        self.char_index_start = char_index_start
-        self.char_index_end = char_index_end
-        self.is_number = isNumber
-      
-    def __repr__(self) -> str:
-        return f"NAME:{self.name} IS NUMBER: {self.is_number}"
 
 
 class Tokenizer:
@@ -64,6 +58,7 @@ class Tokenizer:
         self.tokens = []
         self.errors = []
         self.error_manager = error_manager
+        
 
     def tokenize(self) -> None:
         # go through each line
@@ -100,13 +95,8 @@ class Tokenizer:
                 elif character in VALID_CHARACTERS:
                     buffer = ""
                     character_start = character_count
-                    while character in VALID_CHARACTERS+" " or character in VALID_CHARACTERS+VALID_NUMBERS:
-                        # no more than one whitespace TODO: fix this system
-                        if buffer:
-                            if not (buffer[-1] == " " and character == " "):
-                                buffer += character
-                        else:
-                            buffer += character
+                    while character in VALID_CHARACTERS+VALID_NUMBERS:          
+                        buffer += character
                         character_count +=1
 
                         if character_count < len(line):
@@ -120,25 +110,7 @@ class Tokenizer:
                                              character_count))
                     continue
 
-                elif character in VALID_NUMBERS:
-                    buffer = ""
-                    character_start = character_count
-                    while character in VALID_NUMBERS:
-                        buffer += character
-                        character_count +=1
-
-                        if character_count < len(line):
-                            character = line[character_count]
-                        else:
-                            break
-
-
-                    self.tokens.append(Token(buffer,
-                                             line_count, 
-                                             character_start,
-                                             character_count,
-                                             isNumber=True))
-                    continue
+                
                 else:
                     self.error_manager.add_error("Unknown Character",line_count,character_count,character_count,"The above character doesn't belong ot the syntax.")
 
@@ -174,10 +146,22 @@ class Parser:
         while tkn_counter < len(self.tokens):
             tkn = self.tokens[tkn_counter]
             # diff types of tokens 
-            print(tkn.name)
-            if tkn.name in INSTRUCTIONS.keys():
+            tkn_name = (tkn.name)
+            if tkn_name in INSTRUCTIONS.keys():
                 # if is an instructions
-                _ins = INSTRUCTIONS[tkn.name]
+                params = self._get_param(tkn_counter)  # get paramter
+                print(params)
+                # check if registers exit
+                i = 0
+                for p in params:
+                    if p.name in REGISTERS:
+                        i=1
+                        tkn_name += f" {p.name},"
+                if i ==1:
+                    tkn_name = tkn_name[:-1] 
+                print(tkn_name)
+                quit()       
+                
                 _template = _ins[0]
                 _opcode = _ins[1]
 
@@ -185,8 +169,8 @@ class Parser:
                 i = 0 
                 result = 0x0000 | _opcode
 
-                params = self._get_param(tkn_counter)  # get paramter
-                params.reverse() # done for convinience sake
+                
+                # params.reverse() # done for convinience sake
                 # TODO: check if paramters are more than needed (maybe a third pass for warnings?)
             
                 while i < INSTRUCTIONS_BYTES:
@@ -250,22 +234,25 @@ class Parser:
 
         while (tkn_counter  + i + 1 < len(self.tokens)):
             param_token = self.tokens[tkn_counter  + i + 1]
-
+            if i%2 !=0  and i != "_COMMA":
+                self.error_manager.add_error("Incorrect Parameter",
+                param_token.line_no,
+                param_token.char_index_start,
+                param_token.char_index_end,
+                f"'{param_token.name}' is not a valid parameter")
+            else:
+                i +=1
+                continue
+            
             if param_token.is_number:
                 params.append(int(param_token.name))
-            elif param_token.name == "_COMMA":
-                pass
             elif param_token.name == "_NEW_LINE":
                 break
             # TODO: varaible checking do 
             # else:
-            #     self.error_manager.add_error("Incorrect Parameter",
-            #                                  param_token.line_no,
-            #                                  param_token.char_index_start,
-            #                                  param_token.char_index_end,
-            #                                  f"'{param_token.name}' is not a valid parameter")
+
             
-            i = i + 1
+            i += 1
 
         return params
             
