@@ -6,7 +6,7 @@ import string
 
 SINGLE_CHARACTER_TOKENS  = {    "\n":"_NEW_LINE",
                                 " " :"_SPACE",
-                                ":" : "_COMMENT",
+                                ";" : "_COMMENT",
                                 "," : "_COMMA",
                             }
 
@@ -35,9 +35,9 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
                 "jmp" :      ("A.",0x1000,      "Jump to location nnn."),
                 "call":     ("A.",0x2000,       "Call subroutine at nnn."),
                 "se":       ("XKk.", 0x3000,     "Skip next instruction if Vx = kk."),
-                # "sne ^":       ("sKk.", 0x4000,     "Skip next instruction if Vx != kk."),
+                "sne":       ("XKk.", 0x4000,     "Skip next instruction if Vx != kk."),
 
-                "jmp v0":     ("A.",0xB000,       "Jump to location address + V0."),
+                # "jmp v0":     ("A.",0xB000,       "Jump to location address + V0."),
                 # "ld i":     ("A.", 0xA000,      "The value of register I is set to nnn."),
 
                 # "ld ^":       ("sKk.", 0x6000,     "The interpreter puts the value kk into register Vx."),

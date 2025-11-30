@@ -303,6 +303,9 @@ class Parser:
         while (tkn_counter  + i + 1 < len(self.tokens)):
 
             param_token = self.tokens[tkn_counter  + i + 1]
+            if param_token.name == "_NEW_LINE":
+                break
+
             if i%2 !=0:
                 if param_token.name != "_COMMA":
                     self.error_manager.add_error(f"Expected a comma",
@@ -314,8 +317,6 @@ class Parser:
             
             if param_token.type == "NUMBER" or param_token.type == "REGISTER":
                 params.append(param_token)
-            elif param_token.name == "_NEW_LINE":
-                break
             else:
                 self.error_manager.add_error(f"Invalid Paramter",
                                             param_token,
