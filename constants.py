@@ -36,14 +36,16 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
                 "call":     ("A.",0x2000,       "Call subroutine at nnn."),
                 "se":       ("XKk.", 0x3000,     "Skip next instruction if Vx = kk."),
                 "sne":       ("XKk.", 0x4000,     "Skip next instruction if Vx != kk."),
-                "se ^":     ("XX.",0x4000,"Skip next ins if vx = vy"),
-
-                # "jmp v0":     ("A.",0xB000,       "Jump to location address + V0."),
-                # "ld i":     ("A.", 0xA000,      "The value of register I is set to nnn."),
-
-                # "ld ^":       ("sKk.", 0x6000,     "The interpreter puts the value kk into register Vx."),
-                # "sa v0, v8":(),
-
+                "se ^":     ("XX.",0x5000,"Skip next ins if vx = vy"),
+                "ld":     ("XKk.",0x6000,"Set Vx = kk."),
+                "add":     ("XKk.",0x7000,"Set Vx = Vx + kk."),
+                "ld ^":     ("XX.",0x8000,"Set Vx = Vy."),
+                "or":     ("XX.",0x8001,"Set Vx = Vx OR Vy."),
+                "and":     ("XX.",0x8002,"Set Vx = Vx AND Vy."),
+                "xor":     ("XX.",0x8003,"Set Vx = Vx XOR Vy."),
+                "add ^":     ("XX.",0x8004,"Set Vx = Vx + Vy, set VF = carry."),
+                "sub":     ("XX.",0x8004,"Set Vx = Vx - Vy, set VF = not borrow."),
+                
                 }
 
 # the following code increases tee above dictionary to contain all the register info:

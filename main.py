@@ -200,9 +200,9 @@ class Parser:
                 tkn_name = tkn.name
                 params.reverse()
                 # TODO: Run this once(fix this shit) I know this is not readable i will fix this later
-                for i in range(len(params)):
+                for i in range(len(params)-1,0,-1):
                     p = params[i].name
-                    if params[i].name in REGISTERS and (len(params) == 1 or (len(params) == 2 and params[1].name in REGISTERS) ):
+                    if params[i].name in REGISTERS and (len(params) == 1 or (len(params) == 2 and params[0].name in REGISTERS) ):
                         i=1
                         tkn_name += f" {params[i].name},"
                         break
