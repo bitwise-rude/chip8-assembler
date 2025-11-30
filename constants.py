@@ -44,7 +44,8 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
                 "and":     ("XX.",0x8002,"Set Vx = Vx AND Vy."),
                 "xor":     ("XX.",0x8003,"Set Vx = Vx XOR Vy."),
                 "add ^":     ("XX.",0x8004,"Set Vx = Vx + Vy, set VF = carry."),
-                "sub":     ("XX.",0x8004,"Set Vx = Vx - Vy, set VF = not borrow."),
+                "sub":     ("XX.",0x8005,"Set Vx = Vx - Vy, set VF = not borrow."),
+                "shr":     ("XX.",0x8006,"Set Vx = Vx + Vy, set VF = carry."),
                 
                 }
 
