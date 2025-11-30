@@ -25,12 +25,12 @@ class ErrorManager:
         '''Adds error to an error buffer'''
         
         error_message = f"""
-            {name} at {token.line_no+1}:{token.char_no_start+1}"""
+            {name} at {token.line_no+1}:{token.char_index_start+1}"""
         
         line_of_error = self.source[token.line_no]
 
-        line_description = " " * (token.char_no_start)
-        error_shower = "^" * (token.char_no_end - token.char_no_start+1)
+        line_description = " " * (token.char_index_end)
+        error_shower = "^" * (token.char_index_end - token.char_index_start+1)
 
         self.errors.append(f'''{error_message}
                            {line_of_error}
@@ -115,12 +115,18 @@ class Tokenizer:
                             character = line[character_count]
                         else:
                             break
+                    
+                    # several types
+                    if buffer in REGISTERS:
+                        _type = "REGISTER"
+                    else:
+                        _type = "NAME"
 
                     self.tokens.append(Token(buffer.strip(),
                                              line_count, 
                                              character_start,
                                              character_count,
-                                             "NAME"))
+                                             _type))
                     continue
 
                 # numbers check
@@ -146,7 +152,9 @@ class Tokenizer:
 
                 
                 else:
-                    self.error_manager.add_error("Unknown Character",line_count,character_count,character_count,"The above character doesn't belong ot the syntax.")
+                    self.error_manager.add_error("Unknown Character",
+                                                 Token("_",line_count,character_count,character_count,"_"),
+                                                 "The above character doesn't belong ot the syntax.")
 
                 character_count += 1
             line_count +=1
@@ -177,28 +185,40 @@ class Parser:
         '''
 
         tkn_counter = 0
+
         # parsing through all of the token
         while tkn_counter < len(self.tokens):
             tkn = self.tokens[tkn_counter]
+
             # diff types of tokens 
-            tkn_name = (tkn.name)
-            if tkn_name in INSTRUCTIONS.keys():
+            if tkn.name in INSTRUCTIONS.keys():
                 # if is an instructions
                 params = self._get_param(tkn_counter)  # get paramter
-                print(params)
-                # check if registers exit
+
+                # check if registers exit, if they do then they are entirely new instructions
                 i = 0
+                tkn_name = tkn.name
+
                 for p in params:
                     if p.name in REGISTERS:
                         i=1
                         tkn_name += f" {p.name},"
                 if i ==1:
                     tkn_name = tkn_name[:-1] 
-                print(tkn_name)
-                quit()       
+
+                #TODO: check if exist
+                if tkn_name in INSTRUCTIONS.keys():
+                    _ins = INSTRUCTIONS[tkn_name]   
+                else:
+                    self.error_manager.add_error("Invalid Paramter",
+                                                 p,
+                                                 f"{p.name} isn't a valid parameter for {tkn.name}")
+                    tkn_counter +=1
+                    continue
                 
                 _template = _ins[0]
                 _opcode = _ins[1]
+
 
                 # I call the following way, the Ks way of assembling 
                 i = 0 
@@ -265,27 +285,31 @@ class Parser:
     # helper functions for parsing
     def _get_param(self,tkn_counter) -> list[Token]:
         params = []
-        i = 0
 
+        i = 0
         while (tkn_counter  + i + 1 < len(self.tokens)):
+
             param_token = self.tokens[tkn_counter  + i + 1]
-            if i%2 !=0  and i != "_COMMA":
-                self.error_manager.add_error("Incorrect Parameter",
-                param_token.line_no,
-                param_token.char_index_start,
-                param_token.char_index_end,
-                f"'{param_token.name}' is not a valid parameter")
-            else:
-                i +=1
-                continue
+            if i%2 !=0:
+                if param_token.name != "_COMMA":
+                    self.error_manager.add_error(f"Expected a comma",
+                                            param_token,
+                                            f"'{param_token.name}' isn't a valid parameter seperator")
+                else:
+                    i +=1
+                    continue
             
-            if param_token.is_number:
-                params.append(int(param_token.name))
+            if param_token.type == "NUMBER" or param_token.type == "REGISTER":
+                params.append(param_token)
             elif param_token.name == "_NEW_LINE":
                 break
-            # TODO: varaible checking do 
-            # else:
+            else:
+                self.error_manager.add_error(f"Invalid Paramter",
+                                            param_token,
+                                            f"'{param_token.name}' isn't a valid parameter")
 
+            # TODO: varaible checking do 
+       
             
             i += 1
 
