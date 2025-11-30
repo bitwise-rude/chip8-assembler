@@ -36,6 +36,7 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
                 "call":     ("A.",0x2000,       "Call subroutine at nnn."),
                 "se":       ("XKk.", 0x3000,     "Skip next instruction if Vx = kk."),
                 "sne":       ("XKk.", 0x4000,     "Skip next instruction if Vx != kk."),
+                "se ^":     ("XX.",0x4000,"Skip next ins if vx = vy"),
 
                 # "jmp v0":     ("A.",0xB000,       "Jump to location address + V0."),
                 # "ld i":     ("A.", 0xA000,      "The value of register I is set to nnn."),
@@ -47,25 +48,25 @@ INSTRUCTIONS = {'cls':      (".",0x00E0,        "Clear the display."),
 
 # the following code increases tee above dictionary to contain all the register info:
 # TODO TODO TODO make it cool
-# to_pop = []
-# to_update = []
-# for ins in INSTRUCTIONS.keys():
-#     if "^" in ins:
-#         to_pop.append(ins)
+to_pop = []
+to_update = []
+for ins in INSTRUCTIONS.keys():
+    if "^" in ins:
+        to_pop.append(ins)
 
-#         for i in range(len(REGISTERS)):
+        for i in range(len(REGISTERS)):
         
-#             new_key = ins.replace("^",REGISTERS[i])
-#             new_val_0 = INSTRUCTIONS[ins][0]
-#             new_val_1 = INSTRUCTIONS[ins][1] | (i<<8)
-#             new_val_2 = INSTRUCTIONS[ins][2] # TODO: new documentation also chagne
-#             to_update.append({new_key:(new_val_0,new_val_1,new_val_2)})
+            new_key = ins.replace("^",REGISTERS[i])
+            new_val_0 = INSTRUCTIONS[ins][0]
+            new_val_1 = INSTRUCTIONS[ins][1] | (i<<8)
+            new_val_2 = INSTRUCTIONS[ins][2] # TODO: new documentation also chagne
+            to_update.append({new_key:(new_val_0,new_val_1,new_val_2)})
 
-# for update in to_update:
-#      INSTRUCTIONS.update(update)
+for update in to_update:
+     INSTRUCTIONS.update(update)
      
-# for ins in to_pop:
-#         INSTRUCTIONS.update({ins.replace("^","").strip():""})
+for ins in to_pop:
+        INSTRUCTIONS.pop(ins)
 
 
 # The instructions are always 4 bytes

@@ -198,17 +198,23 @@ class Parser:
                 # check if registers exit, if they do then they are entirely new instructions
                 i = 0
                 tkn_name = tkn.name
-
-                for p in params:
-                    if p.name in REGISTERS:
+                params.reverse()
+                # TODO: Run this once(fix this shit) I know this is not readable i will fix this later
+                for i in range(len(params)):
+                    p = params[i].name
+                    if params[i].name in REGISTERS and (len(params) == 1 or (len(params) == 2 and params[1].name in REGISTERS) ):
                         i=1
-                        tkn_name += f" {p.name},"
+                        tkn_name += f" {params[i].name},"
+                        break
+
+                        
                 if i ==1:
                     tkn_name = tkn_name[:-1] 
 
                 #TODO: check if exist, TODO remove this?
                 if tkn_name in INSTRUCTIONS.keys():
                     _ins = INSTRUCTIONS[tkn_name]  
+                    tkn.name = tkn_name
                 elif tkn.name in INSTRUCTIONS.keys():
                     _ins = INSTRUCTIONS[tkn.name] 
                 else:
@@ -223,12 +229,13 @@ class Parser:
 
 
                 # I call the following way, the Ks way of assembling 
-                i = 0 
+                i = 0
                 result = 0x0000 | _opcode
 
                 # print(_template,hex(_opcode))
                 # quit()
-                params.reverse() # done for convinience sake
+                 # done for convinience sake
+            
                 # TODO: check if paramters are more than needed (maybe a third pass for warnings?)
             
                 while i < INSTRUCTIONS_BYTES:
@@ -254,19 +261,19 @@ class Parser:
                         # X is a single nibble for a register
                         if (len(params)>0):
                             x = params.pop()
-                        
                             # could be register or a number
                          
                             if x.type == "REGISTER":
-                                print(x.name)
                                 t = REGISTERS.index(x.name)
                             elif x.type == "NUMBER":
                                 t = int(x.name) &  0x000F
                             # & 0x000F # getting those X only
                             # i denots the position, actually i+1 does since 1st is always constant
+                           
                             result |= (t<<(((2-i))*4))
-                            print("RES",result)
+                            
                         else:
+                        
                             error_manager.add_error("Expected a parameter",
                                                     tkn,
                                                     f"'{tkn.name}' expects an Register (x) parameter. None were provided"
