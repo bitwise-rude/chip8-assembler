@@ -194,8 +194,8 @@ class Parser:
             if tkn.name in INSTRUCTIONS.keys():
                 # if is an instructions
 
-                params = self._get_param(tkn_counter)  # get paramter
-                params.reverse()
+                fullparams = self._get_param(tkn_counter)  # get paramter
+                fullparams.reverse()
 
                 # check for opcode based on the parameters name
                 opcodes_data = INSTRUCTIONS[tkn.name]
@@ -203,13 +203,15 @@ class Parser:
                 for opcode_data in opcodes_data:
                     _template = opcode_data[0]
                     _opcode = opcode_data[1]
-
+        
                     # if skip
                     to_skip = False
 
                     # I call the following way, the Ks way of assembling 
                     i = 0
                     result = 0x0000 | _opcode
+
+                    params = fullparams.copy()
             
                     while i < len(_template): 
                         k = _template[i]
@@ -232,6 +234,7 @@ class Parser:
                             # X is a single nibble for a register
                             if (len(params)>0):
                                 x = params.pop()
+                               
                                 # could be register or a number
                         
                                 if x.type == "REGISTER":
@@ -239,37 +242,39 @@ class Parser:
                                 elif x.type == "NUMBER":
                                     t = int(x.name) &  0x000F
                                 else:
-                                    pass
+                                    to_skip = True
+                                    break
                             # & 0x000F # getting those X only
                             # i denots the position, actually i+1 does since 1st is always constant
                            
                                 result |= (t<<(((2-i))*4))
-                            
                             else:
-                                pass
+                                to_skip = True
                                 break
                             
                         elif (k == "K"):
                             # K is a single byte
                             if (len(params)>0):
-                                x = int(params.pop().name) & 0x00FF # getting those kk only
+                                _p = params.pop()
+                                
+                                if _p.type == "NUMBER":
+                                    x = int(k.name) & 0x00FF # getting those kk only
                                 # i denots the position, actually i+1 does since 1st is always constant
 
-                                result |= (x<<(((1-i))*4))
+                                    result |= (x<<(((1-i))*4))
+                                else:
+                                    to_skip  = True
+                                    break
                             else:
-                                error_manager.add_error("Expected a parameter",
-                                                        tkn,
-                                                        f"'{tkn.name}' expects an immediate value parameter (kk). None were provided"
-                                                    )
+                                to_skip = True
                                 break
-                            
-                    
 
                         i+=1; 
 
                     if (to_skip): # this is not correct
                         continue  
                     else: # this is the correct
+                        
                         break
                 else:
                     # if no correct found 

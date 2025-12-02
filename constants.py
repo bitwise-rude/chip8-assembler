@@ -29,32 +29,32 @@ REGISTERS = ["v"+hex(i)[2:] for i in range(0,16)] # v0, v1,...vf
 # KEYS(NAME) : [(arg_lsit), opcode]
 
 
-INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),),
-                "ret":      (("", 0x00EE,       "Return from a subroutine."),),
+INSTRUCTIONS = {'cls':      ("",0x00E0,        "Clear the display.",),
+                "ret":      ("", 0x00EE,       "Return from a subroutine.",),
 
-                "jmp" :      (("A",0x1000,      "Jump to location nnn."),),
-                "call":    ( ("A",0x2000,       "Call subroutine at nnn."),),
+                "jmp" :      ("A",0x1000,      "Jump to location nnn.",),
+                "call":    ( "A",0x2000,       "Call subroutine at nnn.",),
                 "se":       (("XK", 0x3000,     "Skip next instruction if Vx = kk."),
-                             "XX",0x5000, "Skip next ins if vx = xy"),
+                             ("XX",0x5000, "Skip next ins if vx = xy")),
 
                 "sne":       ("XKk.", 0x4000,     "Skip next instruction if Vx != kk."),
 
-                ("se","v0"):     ("XX.",0x5000,"Skip next ins if vx = vy"),
-                ("se","v1"):     ("XX.",0x5100,"Skip next ins if vx = vy"),
-                ("se","v2"):     ("XX.",0x5200,"Skip next ins if vx = vy"),
-                ("se","v3"):     ("XX.",0x5300,"Skip next ins if vx = vy"),
-                ("se","v4"):     ("XX.",0x5400,"Skip next ins if vx = vy"),
-                ("se","v5"):     ("XX.",0x5500,"Skip next ins if vx = vy"),
-                ("se","v6"):     ("XX.",0x5600,"Skip next ins if vx = vy"),
-                ("se","v7"):     ("XX.",0x5700,"Skip next ins if vx = vy"),
-                ("se","v8"):     ("XX.",0x5800,"Skip next ins if vx = vy"),
-                ("se","v9"):     ("XX.",0x5900,"Skip next ins if vx = vy"),
-                ("se","va"):     ("XX.",0x5a00,"Skip next ins if vx = vy"),
-                ("se","vb"):     ("XX.",0x5b00,"Skip next ins if vx = vy"),
-                ("se","vc"):     ("XX.",0x5c00,"Skip next ins if vx = vy"),
-                ("se","vd"):     ("XX.",0x5d00,"Skip next ins if vx = vy"),
-                ("se","ve"):     ("XX.",0x5e00,"Skip next ins if vx = vy"),
-                ("se","vf"):     ("XX.",0x5f00,"Skip next ins if vx = vy"),
+                # ("se","v0"):     ("XX.",0x5000,"Skip next ins if vx = vy"),
+                # ("se","v1"):     ("XX.",0x5100,"Skip next ins if vx = vy"),
+                # ("se","v2"):     ("XX.",0x5200,"Skip next ins if vx = vy"),
+                # ("se","v3"):     ("XX.",0x5300,"Skip next ins if vx = vy"),
+                # ("se","v4"):     ("XX.",0x5400,"Skip next ins if vx = vy"),
+                # ("se","v5"):     ("XX.",0x5500,"Skip next ins if vx = vy"),
+                # ("se","v6"):     ("XX.",0x5600,"Skip next ins if vx = vy"),
+                # ("se","v7"):     ("XX.",0x5700,"Skip next ins if vx = vy"),
+                # ("se","v8"):     ("XX.",0x5800,"Skip next ins if vx = vy"),
+                # ("se","v9"):     ("XX.",0x5900,"Skip next ins if vx = vy"),
+                # ("se","va"):     ("XX.",0x5a00,"Skip next ins if vx = vy"),
+                # ("se","vb"):     ("XX.",0x5b00,"Skip next ins if vx = vy"),
+                # ("se","vc"):     ("XX.",0x5c00,"Skip next ins if vx = vy"),
+                # ("se","vd"):     ("XX.",0x5d00,"Skip next ins if vx = vy"),
+                # ("se","ve"):     ("XX.",0x5e00,"Skip next ins if vx = vy"),
+                # ("se","vf"):     ("XX.",0x5f00,"Skip next ins if vx = vy"),
 
                 ("ld",""):     ("XKk.",0x6000,"Set Vx = kk."),
                 ("add",""):     ("XKk.",0x7000,"Set Vx = Vx + kk."),
@@ -108,27 +108,27 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),),
                 ("ld","i"):     ("A.",0xA000,"Set I = nnn.")
                 }
 
-# the following code increases tee above dictionary to contain all the register info:
-# TODO TODO TODO make it cool
-to_pop = []
-to_update = []
-for ins in INSTRUCTIONS.keys():
-    if "^" in ins:
-        to_pop.append(ins)
+# # the following code increases tee above dictionary to contain all the register info:
+# # TODO TODO TODO make it cool
+# to_pop = []
+# to_update = []
+# for ins in INSTRUCTIONS.keys():
+#     if "^" in ins:
+#         to_pop.append(ins)
 
-        for i in range(len(REGISTERS)):
+#         for i in range(len(REGISTERS)):
         
-            new_key = ins.replace("^",REGISTERS[i])
-            new_val_0 = INSTRUCTIONS[ins][0]
-            new_val_1 = INSTRUCTIONS[ins][1] | (i<<8)
-            new_val_2 = INSTRUCTIONS[ins][2] # TODO: new documentation also chagne
-            to_update.append({new_key:(new_val_0,new_val_1,new_val_2)})
+#             new_key = ins.replace("^",REGISTERS[i])
+#             new_val_0 = INSTRUCTIONS[ins][0]
+#             new_val_1 = INSTRUCTIONS[ins][1] | (i<<8)
+#             new_val_2 = INSTRUCTIONS[ins][2] # TODO: new documentation also chagne
+#             to_update.append({new_key:(new_val_0,new_val_1,new_val_2)})
 
-for update in to_update:
-     INSTRUCTIONS.update(update)
+# for update in to_update:
+#      INSTRUCTIONS.update(update)
      
-for ins in to_pop:
-        INSTRUCTIONS.pop(ins)
+# for ins in to_pop:
+#         INSTRUCTIONS.pop(ins)
 
 
 # The instructions are always 4 bytes
