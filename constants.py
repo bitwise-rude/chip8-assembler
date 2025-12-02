@@ -42,21 +42,18 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                 "ld":     (("XK",0x6000,"Set Vx = kk."),
                             ("XX",0x8000,"Set vx = vy")),
 
-                "add":     (("XK",0x7000,"Set Vx = Vx + kk."),),
+                "add":     (("XK",0x7000,"Set Vx = Vx + kk."),
+                            ("XX",0x8004, "Set Vx = Vx  + Vy")),
+
                 "or":    ( ("XX",0x8001,"Set Vx = Vx OR Vy."),),
                 "and":     (("XX",0x8002,"Set Vx = Vx AND Vy."),),
-
                 "xor":     (("XX",0x8003,"Set Vx = Vx XOR Vy."),),
-                
-
-         
-
-                ("sub",""):     ("XX.",0x8005,"Set Vx = Vx - Vy, set VF = not borrow."),
-                ("shr",""):     ("XX.",0x8006,"Set Vx = Vx SHR 1."),
-                ("subn",""):     ("XX.",0x8007,"Set Vx = Vy - Vx, set VF = NOT borrow."),
-                ("shl",""):      ("XX.",0x800e,"Set Vx = Vx SHL 1."),
-                ("sne",""):      ("XX.",0x9000,"Skip next instruction if Vx != Vy."),
-                ("ld","i"):     ("A.",0xA000,"Set I = nnn.")
+                "sub":     (("XX",0x8005,"Set Vx = Vx - Vy, set VF = not borrow."),),
+                "shr":     (("XX",0x8006,"Set Vx = Vx SHR 1."),),
+                "subn":    ( ("XX",0x8007,"Set Vx = Vy - Vx, set VF = NOT borrow."),),
+                "shl":     ( ("XX",0x800e,"Set Vx = Vx SHL 1."),),
+               "sne":      (("XX.",0x9000,"Skip next instruction if Vx != Vy."),),
+                # ("ld","i"):    ( ("A.",0xA000,"Set I = nnn."),)
                 }
 
 

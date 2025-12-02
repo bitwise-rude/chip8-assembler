@@ -259,7 +259,7 @@ class Parser:
                                 _p = params.pop()
                                 
                                 if _p.type == "NUMBER":
-                                    x = int(k.name) & 0x00FF # getting those kk only
+                                    x = int(_p.name) & 0x00FF # getting those kk only
                                 # i denots the position, actually i+1 does since 1st is always constant
 
                                     result |= (x<<(((1-i))*4))
