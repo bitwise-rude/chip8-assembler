@@ -195,108 +195,90 @@ class Parser:
                 # if is an instructions
 
                 params = self._get_param(tkn_counter)  # get paramter
+                params.reverse()
 
                 # check for opcode based on the parameters name
                 opcodes_data = INSTRUCTIONS[tkn.name]
 
                 for opcode_data in opcodes_data:
                     _template = opcode_data[0]
+                    _opcode = opcode_data[1]
 
+                    # if skip
+                    to_skip = False
 
+                    # I call the following way, the Ks way of assembling 
+                    i = 0
+                    result = 0x0000 | _opcode
+            
+                    while i < len(_template): 
+                        k = _template[i]
 
+                        if (k == "A"):  # for address
+                            # for A we need (nnn)
+                            if (len(params)>0):
+                                _p = params.pop()
+                                if _p.type == "NUMBER":
+                                    nnn = int(_p.name) & 0x0FFF # getting those nnn only
+                                    result |=nnn
+                                else:
+                                    to_skip = True
+                                    break
+                            else:
+                                to_skip = True
+                                break
+            
+                        elif (k == "X"):
+                            # X is a single nibble for a register
+                            if (len(params)>0):
+                                x = params.pop()
+                                # could be register or a number
                         
-                if i ==1:
-                    tkn_name = tkn_name[:-1] 
-
-                #TODO: check if exist, TODO remove this?
-                if tkn_name in INSTRUCTIONS.keys():
-                    _ins = INSTRUCTIONS[tkn_name]  
-                    tkn.name = tkn_name
-                elif tkn.name in INSTRUCTIONS.keys():
-                    _ins = INSTRUCTIONS[tkn.name] 
-                else:
-                    self.error_manager.add_error("Invalid Paramter",
-                                                 p,
-                                                 f"{p.name} isn't a valid parameter for {tkn.name}")
-                    tkn_counter +=1
-                    continue
-                
-                _template = _ins[0]
-                _opcode = _ins[1]
-
-
-                # I call the following way, the Ks way of assembling 
-                i = 0
-                result = 0x0000 | _opcode
-
-                # print(_template,hex(_opcode))
-                # quit()
-                 # done for convinience sake
-            
-                # TODO: check if paramters are more than needed (maybe a third pass for warnings?)
-            
-                while i < INSTRUCTIONS_BYTES:
-                    k = _template[i]
-
-                    if(k=="."):break
-                    
-                    elif (k == "A"):  # for address
-                        # for A we need (nnn)
-                        if (len(params)>0):
-                            nnn = int(params.pop().name) & 0x0FFF # getting those nnn only
-                            result |=nnn
-                        else:
-                            error_manager.add_error("Expected a parameter",
-                                                    tkn.line_no,
-                                                    tkn.char_index_start,
-                                                    tkn.char_index_end,
-                                                    f"'{tkn.name}' expects an Address (nnn) parameter. None were provided"
-                                                  )
-                            
-                            break
-                    elif (k == "X"):
-                        # X is a single nibble for a register
-                        if (len(params)>0):
-                            x = params.pop()
-                            # could be register or a number
-                         
-                            if x.type == "REGISTER":
-                                t = REGISTERS.index(x.name)
-                            elif x.type == "NUMBER":
-                                t = int(x.name) &  0x000F
+                                if x.type == "REGISTER":
+                                    t = REGISTERS.index(x.name)
+                                elif x.type == "NUMBER":
+                                    t = int(x.name) &  0x000F
+                                else:
+                                    pass
                             # & 0x000F # getting those X only
                             # i denots the position, actually i+1 does since 1st is always constant
                            
-                            result |= (t<<(((2-i))*4))
+                                result |= (t<<(((2-i))*4))
                             
-                        else:
-                        
-                            error_manager.add_error("Expected a parameter",
-                                                    tkn,
-                                                    f"'{tkn.name}' expects an Register (x) parameter. None were provided"
-                                                  )
-                            break
+                            else:
+                                pass
+                                break
                             
-                    elif (k == "K"):
-                        # K is a single byte
-                        if (len(params)>0):
-                            x = int(params.pop().name) & 0x00FF # getting those kk only
-                            # i denots the position, actually i+1 does since 1st is always constant
+                        elif (k == "K"):
+                            # K is a single byte
+                            if (len(params)>0):
+                                x = int(params.pop().name) & 0x00FF # getting those kk only
+                                # i denots the position, actually i+1 does since 1st is always constant
 
-                            result |= (x<<(((1-i))*4))
-                        else:
-                            error_manager.add_error("Expected a parameter",
-                                                    tkn,
-                                                    f"'{tkn.name}' expects an immediate value parameter (kk). None were provided"
-                                                  )
-                            break
+                                result |= (x<<(((1-i))*4))
+                            else:
+                                error_manager.add_error("Expected a parameter",
+                                                        tkn,
+                                                        f"'{tkn.name}' expects an immediate value parameter (kk). None were provided"
+                                                    )
+                                break
                             
-                           
-                    # else show an error?
+                    
 
-                    i+=1;   
+                        i+=1; 
+
+                    if (to_skip): # this is not correct
+                        continue  
+                    else: # this is the correct
+                        break
+                else:
+                    # if no correct found 
+                    # TODO: show correct parameters
+                    self.error_manager.add_error("Incorrect Paramter",
+                                                 tkn,
+                                                 f"{tkn.name} expects paramters. No correct paramter has been passed"
+                                                 )
                 self.add_ins(result)
-            
             tkn_counter +=1
         
     # helper functions for parsing

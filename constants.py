@@ -29,11 +29,11 @@ REGISTERS = ["v"+hex(i)[2:] for i in range(0,16)] # v0, v1,...vf
 # KEYS(NAME) : [(arg_lsit), opcode]
 
 
-INSTRUCTIONS = {'cls':      ((".",0x00E0,        "Clear the display."),),
-                "ret":      ((".", 0x00EE,       "Return from a subroutine."),),
+INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),),
+                "ret":      (("", 0x00EE,       "Return from a subroutine."),),
 
-                "jmp" :      (("A.",0x1000,      "Jump to location nnn."),),
-                "call":    ( ("A.",0x2000,       "Call subroutine at nnn."),),
+                "jmp" :      (("A",0x1000,      "Jump to location nnn."),),
+                "call":    ( ("A",0x2000,       "Call subroutine at nnn."),),
                 "se":       (("XK", 0x3000,     "Skip next instruction if Vx = kk."),
                              "XX",0x5000, "Skip next ins if vx = xy"),
 
