@@ -201,7 +201,7 @@ class Parser:
                 opcodes_data = INSTRUCTIONS[tkn.name]
 
                 for opcode_data in opcodes_data:
-                    _template = opcode_data[0]
+                    _template = opcode_data[0].split()
                     _opcode = opcode_data[1]
         
                     # if skip

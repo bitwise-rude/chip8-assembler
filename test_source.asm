@@ -1,1 +1,1 @@
-drw v1,v2,6
+ld v1, dt
