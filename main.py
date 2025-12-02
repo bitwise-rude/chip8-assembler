@@ -248,12 +248,28 @@ class Parser:
                             # & 0x000F # getting those X only
                             # i denots the position, actually i+1 does since 1st is always constant
                            
-                                result |= (t<<(((2-i))*4))
+                                result |= (t<<(((2-i))*4)) #TODO this 2 and 1 wont' work properyl please not
                             else:
                                 to_skip = True
                                 break
                         
-                        
+                        elif (k == "N"):
+                            # N is a nibble
+                            if (len(params)>0):
+                                _p = params.pop()
+                                if _p.type == "NUMBER":
+                                    x = int(_p.name) & 0x000F # getting those n only
+
+                                    result |= x
+                                else:
+                                    to_skip  = True
+                                    break
+                            else:
+                                to_skip = True
+                                break
+                            
+                            
+
                             
                         elif (k == "K"):
                             # K is a single byte

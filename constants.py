@@ -33,7 +33,9 @@ OTHERS = ["st","dt","i"]
 
 INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                 "ret":      (("", 0x00EE,       "Return from a subroutine."),)  ,
+
                 "jmp" :      (("A",0x1000,      "Jump to location nnn."),)      ,
+                
                 "call":    (( "A",0x2000,       "Call subroutine at nnn."),)      ,
 
                 "se":       (("XK", 0x3000,     "Skip next instruction if Vx = kk."),
@@ -55,8 +57,15 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                 "shr":     (("XX",0x8006,"Set Vx = Vx SHR 1."),),
                 "subn":    ( ("XX",0x8007,"Set Vx = Vy - Vx, set VF = NOT borrow."),),
                 "shl":     ( ("XX",0x800e,"Set Vx = Vx SHL 1."),),
-               "sne":      (("XX.",0x9000,"Skip next instruction if Vx != Vy."),),
-                # ("ld","i"):    ( ("A.",0xA000,"Set I = nnn."),)
+               "sne":      (("XX",0x9000,"Skip next instruction if Vx != Vy."),),
+                "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
+                "rnd":      (("XK",0xC000,"Set Vx = random byte AND kk."),),
+                "drw":      (("XXN",0xD000,"Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision."),),
+                "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
+                "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
+                "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
+
+                
                 }
 
 
