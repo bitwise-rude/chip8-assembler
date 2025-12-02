@@ -394,6 +394,14 @@ def read_file_contents(file_name : str) -> list[str]:
         show_err_and_quit("The source file wasn't found")
     #handle other erros as well
 
+def save_in_file(file_name:str, data:bytearray) -> None:
+    ''' Saves the byte array in the file'''
+    try:
+        file_handler = open(file_name,'wb')
+        file_handler.write(data)
+    except FileNotFoundError:
+        show_err_and_quit("The destination file wasn't found")
+
 if len(sys.argv) < 2: 
     show_err_and_quit("Source File Needed")
 
@@ -419,3 +427,11 @@ parser.parse()
 if error_manager.show_errors():
     show_err_and_quit("Parsing Error")
 print(parser.generated_code.hex(sep="-"))
+
+# save it out in a file
+if (len(sys.argv)>2):
+    save_file = sys.argv[2]
+else:
+    save_file = "out.bin"
+
+save_in_file(save_file,parser.generated_code)
