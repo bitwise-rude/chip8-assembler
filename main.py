@@ -166,6 +166,9 @@ class Parser:
         self.tokens = tokens
         self.error_manager = error_manager
 
+        self.labels = {} # stores and labels and the address
+        self.current_address = 0x0200
+
         self.generated_code = bytearray() # final machine code will be here
     
     def add_ins(self,ins:int) -> None:
@@ -178,6 +181,9 @@ class Parser:
 
         self.generated_code.append(msb)
         self.generated_code.append(lsb)
+
+        self.current_address += INSTRUCTIONS_BYTES
+
 
     def parse(self)->None:
         '''
@@ -317,6 +323,12 @@ class Parser:
                                                  f"{tkn.name} expects paramters. No correct paramter has been passed"
                                                  )
                 self.add_ins(result)
+            
+            elif tkn.type == "NAME":
+                # if is a label
+                if tkn_counter+1<len(self.tokens) and self.tokens[tkn_counter+1].name == "_COLON":
+                    self.labels.update({tkn.name:self.current_address})
+    
             tkn_counter +=1
         
     # helper functions for parsing
@@ -338,6 +350,13 @@ class Parser:
                 else:
                     i +=1
                     continue
+            
+            if param_token.type == "NAME":
+                # is an address?
+                if param_token.name in self.labels.keys():
+                    param_token.name  = str(self.labels[param_token.name])
+                    param_token.type = "NUMBER"
+
             params.append(param_token)
             
             # if param_token.type == "NUMBER" or param_token.type == "REGISTER":

@@ -1,4 +1,3 @@
-# make less clustured
 import string
 
 #######
@@ -8,6 +7,7 @@ SINGLE_CHARACTER_TOKENS  = {    "\n":"_NEW_LINE",
                                 " " :"_SPACE",
                                 ";" : "_COMMENT",
                                 "," : "_COMMA",
+                                ":" :"_COLON"
                             }
 
 VALID_NUMBERS = "0123456789"
@@ -21,14 +21,7 @@ OTHERS = ["st","dt","i"]
 #####
 #instructions
 
-# INSTRUCTIONS HAVE THE FOLLOWING TEMPLATE
-###
-# R deonts the retrunign opcode
-# A denotes a 3-bit address, as a parameter
-## . denotes skip
-# ^ denotes that this needs to be expanded for all the registers
 
-# KEYS(NAME) : [(arg_lsit), opcode]
 
 
 INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
@@ -76,18 +69,9 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                 "drw":      (("X X N",0xD000,"Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision."),),
                 "skp":      (("X",0xE09E,"Skip next instruction if key with the value of Vx is pressed."),),
                 "sknp":      (("X",0xE091,"Skip next instruction if key with the value of Vx is not pressed."),),
-                # "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
-                # "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
-                # "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
-                # "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
-                # "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
-                # "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
-                # "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
-                # "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
-
                 
                 }
 
 
-# The instructions are always 4 bytes
-INSTRUCTIONS_BYTES = 4
+# The instructions are always 2 bytes
+INSTRUCTIONS_BYTES = 2
