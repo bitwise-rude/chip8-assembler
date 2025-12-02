@@ -87,7 +87,13 @@ class Tokenizer:
                     tkn_name = SINGLE_CHARACTER_TOKENS[character]
 
                     if tkn_name == "_COMMENT": # comments
-                        #skip the whole line 
+                        #skip the whole line
+                        self.tokens.append(Token("_NEW_LINE",
+                                                 line_count,
+                                                 character_count,
+                                                 character_count,
+                                                 "KEYWORD"
+                                           ) )
                         character_count = len(line)
                         continue
                 
