@@ -1,1 +1,1 @@
-ld v1, dt
+ld dt,v5

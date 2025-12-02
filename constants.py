@@ -46,7 +46,10 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                 "ld":     (("X K",0x6000,"Set Vx = kk."),
                             ("X X",0x8000,"Set vx = vy"),
                             ("i A",0xA000,"Set I = nnn"),
-                            ("X dt",0XF007,"The value of DT is placed into Vx.")),
+                            ("X dt",0XF007,"The value of DT is placed into Vx."),
+                            ("X k",0xF00A,"Wait for a key press, store the value of the key in Vx."),
+                            ("dt X",0XF015,"Set delay timer = Vx."),),
+
 
                 "add":     (("X K",0x7000,"Set Vx = Vx + kk."),
                             ("X X",0x8004, "Set Vx = Vx  + Vy")),

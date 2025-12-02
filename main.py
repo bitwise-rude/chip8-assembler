@@ -209,6 +209,7 @@ class Parser:
 
                     # I call the following way, the Ks way of assembling 
                     i = 0
+                    param_counter = 0
                     print(_opcode)
                     result = 0x0000 | _opcode
 
@@ -248,7 +249,8 @@ class Parser:
                             # & 0x000F # getting those X only
                             # i denots the position, actually i+1 does since 1st is always constant
                            
-                                result |= (t<<(((2-i))*4)) #TODO this 2 and 1 wont' work properyl please not
+                                result |= (t<<(((2-param_counter))*4)) #TODO this 2 and 1 wont' work properyl please not
+                                # param counter is only use TODO there for ld dt,5 to work please fix
                             else:
                                 to_skip = True
                                 break
@@ -293,11 +295,14 @@ class Parser:
                                 _p = params.pop()
                                 if _p.name != k:
                                     to_skip = True
+                                else:
+                                    param_counter -=1
                             else:
                                 to_skip = True
                                 break
 
-                        i+=1; 
+                        i+=1 
+                        param_counter += 1 # see this
 
                     if (to_skip): # this is not correct
                         continue  
