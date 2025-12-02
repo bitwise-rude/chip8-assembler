@@ -48,11 +48,20 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                             ("i A",0xA000,"Set I = nnn"),
                             ("X dt",0XF007,"The value of DT is placed into Vx."),
                             ("X k",0xF00A,"Wait for a key press, store the value of the key in Vx."),
-                            ("dt X",0XF015,"Set delay timer = Vx."),),
+                            ("dt X",0XF015,"Set delay timer = Vx."),
+                            ("st X",0XF018,"Set sound timer = Vx."),
+                            ("f X",0xF029,"Set I = location of sprite for digit Vx."),
+                            ("b X",0xF033,"Store BCD representation of Vx in memory locations I, I+1, and I+2."),
+                            ("m X",0xF055,"Store registers V0 through Vx in memory starting at location I."),
+                            ("X m",0xF055,"Read registers V0 through Vx from memory starting at location I.")),
+
 
 
                 "add":     (("X K",0x7000,"Set Vx = Vx + kk."),
-                            ("X X",0x8004, "Set Vx = Vx  + Vy")),
+                            ("X X",0x8004, "Set Vx = Vx  + Vy"),
+                            ("i X",0xF01E, "Set  I = I + Vx"),
+                            
+                            ),
 
                 "or":    ( ("X X",0x8001,"Set Vx = Vx OR Vy."),),
                 "and":     (("X X",0x8002,"Set Vx = Vx AND Vy."),),
