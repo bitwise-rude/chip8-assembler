@@ -193,19 +193,16 @@ class Parser:
             # diff types of tokens 
             if tkn.name in INSTRUCTIONS.keys():
                 # if is an instructions
+
                 params = self._get_param(tkn_counter)  # get paramter
 
-                # check if registers exit, if they do then they are entirely new instructions
-                i = 0
-                tkn_name = tkn.name
-                params.reverse()
-                # TODO: Run this once(fix this shit) I know this is not readable i will fix this later
-                for i in range(len(params)-1,0,-1):
-                    p = params[i].name
-                    if params[i].name in REGISTERS and (len(params) == 1 or (len(params) == 2 and params[0].name in REGISTERS) ):
-                        i=1
-                        tkn_name += f" {params[i].name},"
-                        break
+                # check for opcode based on the parameters name
+                opcodes_data = INSTRUCTIONS[tkn.name]
+
+                for opcode_data in opcodes_data:
+                    _template = opcode_data[0]
+
+
 
                         
                 if i ==1:
