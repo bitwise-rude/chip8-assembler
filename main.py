@@ -252,6 +252,8 @@ class Parser:
                             else:
                                 to_skip = True
                                 break
+                        
+                        
                             
                         elif (k == "K"):
                             # K is a single byte
@@ -266,6 +268,15 @@ class Parser:
                                 else:
                                     to_skip  = True
                                     break
+                            else:
+                                to_skip = True
+                                break
+                        
+                        else:
+                            if (len(params)>0):
+                                _p = params.pop()
+                                if _p.name != k:
+                                    to_skip = True
                             else:
                                 to_skip = True
                                 break
@@ -306,16 +317,17 @@ class Parser:
                 else:
                     i +=1
                     continue
+            params.append(param_token)
             
-            if param_token.type == "NUMBER" or param_token.type == "REGISTER":
-                params.append(param_token)
-            else:
-                self.error_manager.add_error(f"Invalid Paramter",
-                                            param_token,
-                                            f"'{param_token.name}' isn't a valid parameter")
-                param_token.name = "1"
-                param_token.type = "NUMBER"
-                params.append(param_token)
+            # if param_token.type == "NUMBER" or param_token.type == "REGISTER":
+            #     params.append(param_token)
+            # else:
+            #     self.error_manager.add_error(f"Invalid Paramter",
+            #                                 param_token,
+            #                                 f"'{param_token.name}' isn't a valid parameter")
+            #     param_token.name = "1"
+            #     param_token.type = "NUMBER"
+            #     params.append(param_token)
 
             # TODO: varaible checking do  
             # TODO: ERROR

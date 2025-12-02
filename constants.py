@@ -15,6 +15,8 @@ VALID_CHARACTERS = string.ascii_lowercase + "_"
 
 REGISTERS = ["v"+hex(i)[2:] for i in range(0,16)] # v0, v1,...vf
 
+OTHERS = ["st","dt","i"]
+
 
 #####
 #instructions
@@ -40,7 +42,8 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                 "sne":       (("XK", 0x4000,     "Skip next instruction if Vx != kk."),)    ,
 
                 "ld":     (("XK",0x6000,"Set Vx = kk."),
-                            ("XX",0x8000,"Set vx = vy")),
+                            ("XX",0x8000,"Set vx = vy"),
+                            ("iA",0xA000,"Set I = nnn")),
 
                 "add":     (("XK",0x7000,"Set Vx = Vx + kk."),
                             ("XX",0x8004, "Set Vx = Vx  + Vy")),
