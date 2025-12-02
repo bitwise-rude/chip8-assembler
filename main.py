@@ -209,6 +209,7 @@ class Parser:
 
                     # I call the following way, the Ks way of assembling 
                     i = 0
+                    print(_opcode)
                     result = 0x0000 | _opcode
 
                     params = fullparams.copy()
