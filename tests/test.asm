@@ -1,3 +1,1 @@
-start:
-    ld v0,$ee
-db start,$ff
+ld v0, %11111110

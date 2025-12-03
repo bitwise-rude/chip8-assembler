@@ -180,6 +180,30 @@ class Tokenizer:
                                              "HEX"))
                     
                     continue
+
+                # binary TODO ins single time
+                
+                elif character == BIN_PREFIX:
+                    buffer = ""
+                    character_start = character_count
+
+                    while character in VALID_BIN or (character_start == character_count and character == BIN_PREFIX):          
+                        buffer += character
+                        character_count +=1
+
+                        if character_count < len(line):
+                            character = line[character_count]
+                        else:
+                            break
+                    num = buffer.strip()[1:]
+                    num = num if num !="" else "0"
+                    self.tokens.append(Token(num, # for the dollar
+                                             line_count, 
+                                             character_start,
+                                             character_count,
+                                             "BIN"))
+                    
+                    continue
                 
 
                 
@@ -409,6 +433,10 @@ class Parser:
             elif param_token.type == "HEX":
                 param_token.type ="NUMBER"
                 param_token.name = str(int(param_token.name, base =16))
+            
+            elif param_token.type == "BIN":
+                param_token.type ="NUMBER"
+                param_token.name = str(int(param_token.name, base =2))
 
             params.append(param_token)
             
