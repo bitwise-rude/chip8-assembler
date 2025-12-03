@@ -302,6 +302,14 @@ class Parser:
                                 if _p.type == "NUMBER":
                                     nnn = int(_p.name) & 0x0FFF # getting those nnn only
                                     result |=nnn
+                                elif _p.type == "LABEL":
+                                    if not _p.name.startswith("None"):
+                                        nnn = int(_p.name) & 0x0FFF # getting those nnn only
+                                        result |=nnn
+                                    else:
+                                        _l = _p.name.split(" ")[1]
+                                        self.unknown_labels[_l].append(len(self.generated_code))
+                                     
                                 else:
                                     to_skip = True
                                     break
@@ -400,6 +408,15 @@ class Parser:
                 if tkn_counter+1<len(self.tokens) and self.tokens[tkn_counter+1].name == "_COLON":
                     self.labels.update({tkn.name:self.current_address})
 
+                    # now add all which it has used
+                    to_update = self.unknown_labels.get(tkn.name)
+
+                    if to_update:
+                        for index in to_update:
+                            self.generated_code[index] |= ((self.current_address & 0xF00)>>8)
+                            self.generated_code[index+1] |= ((self.current_address & 0x0ff))
+                          
+
                 if tkn.name == "db":
                     # define bytes thing
                     params = self._get_param(tkn_counter)
@@ -437,14 +454,14 @@ class Parser:
             if param_token.type == "NAME":
                 # is an address?
                 if param_token.name in self.labels.keys():
-                    
+                    _l = param_token.name
                     param_token.name  = str(self.labels[param_token.name])
 
-                    # if param_token == "None":
-                    #     self.unknown_labels[param_token.name].append(self.current_address)
-                    #     pass
+                    if param_token.name == "None":
+                        param_token.name+=" "+_l
+                        pass
 
-                    param_token.type = "NUMBER"
+                    param_token.type = "LABEL"
             
             elif param_token.type == "HEX":
                 param_token.type ="NUMBER"
