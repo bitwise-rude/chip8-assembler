@@ -171,11 +171,14 @@ class Tokenizer:
                             character = line[character_count]
                         else:
                             break
-                    self.tokens.append(Token(buffer.strip()[1:], # for the dollar
+                    num = buffer.strip()[1:]
+                    num = num if num !="" else "0"
+                    self.tokens.append(Token(num, # for the dollar
                                              line_count, 
                                              character_start,
                                              character_count,
                                              "HEX"))
+                    
                     continue
                 
 
@@ -200,7 +203,7 @@ class Parser:
 
         self.generated_code = bytearray() # final machine code will be here
     
-    def add_ins(self,ins:int) -> None:
+    def add_ins(self,ins:int,isSingleByte = False) -> None:
         '''
             Converts `ins` a 2 byte instruction to the bytearray
             by seperating into LSB and MSB
@@ -208,10 +211,15 @@ class Parser:
         lsb = ins & 0x00FF
         msb = (ins&0xFF00) >> 8
 
-        self.generated_code.append(msb)
-        self.generated_code.append(lsb)
+        if not isSingleByte:
+            self.generated_code.append(msb)
+            self.generated_code.append(lsb)
+            self.current_address += INSTRUCTIONS_BYTES
+        else:
+            self.generated_code.append(ins & 0xFF)
+            self.current_address += 1
 
-        self.current_address += INSTRUCTIONS_BYTES
+        
 
 
     def parse(self)->None:
@@ -357,6 +365,18 @@ class Parser:
                 # if is a label
                 if tkn_counter+1<len(self.tokens) and self.tokens[tkn_counter+1].name == "_COLON":
                     self.labels.update({tkn.name:self.current_address})
+
+                if tkn.name == "db":
+                    # define bytes thing
+                    params = self._get_param(tkn_counter)
+                    
+                    for param in params:
+                        if param.type == "NUMBER":
+                            self.add_ins(int(param.name),isSingleByte=True)
+                        else:
+                            self.error_manager.add_error("Define Bytes failed",
+                                                         param,
+                                                         f'{param.name} cannot be defined in the memory')
     
             tkn_counter +=1
         
