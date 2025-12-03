@@ -205,8 +205,6 @@ class Tokenizer:
                     
                     continue
                 
-
-                
                 else:
                     self.error_manager.add_error("Unknown Character",
                                                  Token("_",line_count,character_count,character_count,"_"),
@@ -223,6 +221,7 @@ class Parser:
         self.error_manager = error_manager
 
         self.labels = {} # stores and labels and the address
+        self.unknown_labels = {}
         self.current_address = 0x0200
 
         self.generated_code = bytearray() # final machine code will be here
@@ -250,6 +249,17 @@ class Parser:
         '''
             Main parsing method
         '''
+
+        tkn_counter = 0
+        
+        # this also contain two passes first for label detection and next for actual thing
+        while tkn_counter < len(self.tokens):
+            tkn = self.tokens[tkn_counter]
+            if tkn.type == "NAME":
+                if tkn_counter+1<len(self.tokens) and self.tokens[tkn_counter+1].name == "_COLON":
+                    self.labels.update({tkn.name:None}) # right now address is unknown #TODO: make it nice
+                    self.unknown_labels.update({tkn.name:[]})
+            tkn_counter += 1
 
         tkn_counter = 0
 
@@ -427,7 +437,13 @@ class Parser:
             if param_token.type == "NAME":
                 # is an address?
                 if param_token.name in self.labels.keys():
+                    
                     param_token.name  = str(self.labels[param_token.name])
+
+                    # if param_token == "None":
+                    #     self.unknown_labels[param_token.name].append(self.current_address)
+                    #     pass
+
                     param_token.type = "NUMBER"
             
             elif param_token.type == "HEX":
