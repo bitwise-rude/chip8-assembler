@@ -136,6 +136,8 @@ class Tokenizer:
                     continue
 
                 # numbers check
+
+                # decimals
                 elif character in VALID_NUMBERS:
                     buffer = ""
                     character_start = character_count
@@ -155,6 +157,27 @@ class Tokenizer:
                                              character_count,
                                              "NUMBER"))
                     continue
+                
+                # hexdecimal
+                elif character == HEX_PREFIX:
+                    buffer = ""
+                    character_start = character_count
+
+                    while character in VALID_HEX or (character_start == character_count and character == HEX_PREFIX):          
+                        buffer += character
+                        character_count +=1
+
+                        if character_count < len(line):
+                            character = line[character_count]
+                        else:
+                            break
+                    self.tokens.append(Token(buffer.strip()[1:], # for the dollar
+                                             line_count, 
+                                             character_start,
+                                             character_count,
+                                             "HEX"))
+                    continue
+                
 
                 
                 else:
@@ -229,7 +252,7 @@ class Parser:
             
                     while i < len(_template): 
                         k = _template[i]
-
+                        print(params)
                         if (k == "A"):  # for address
                             # for A we need (nnn)
                             if (len(params)>0):
@@ -362,6 +385,10 @@ class Parser:
                 if param_token.name in self.labels.keys():
                     param_token.name  = str(self.labels[param_token.name])
                     param_token.type = "NUMBER"
+            
+            elif param_token.type == "HEX":
+                param_token.type ="NUMBER"
+                param_token.name = str(int(param_token.name, base =16))
 
             params.append(param_token)
             

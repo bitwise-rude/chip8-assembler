@@ -7,11 +7,14 @@ SINGLE_CHARACTER_TOKENS  = {    "\n":"_NEW_LINE",
                                 " " :"_SPACE",
                                 ";" : "_COMMENT",
                                 "," : "_COMMA",
-                                ":" :"_COLON"
+                                ":" :"_COLON",
                             }
 
 VALID_NUMBERS = "0123456789"
 VALID_CHARACTERS = string.ascii_lowercase + "_"
+
+HEX_PREFIX = "$"
+VALID_HEX = VALID_NUMBERS + "abcdef"
 
 REGISTERS = ["v"+hex(i)[2:] for i in range(0,16)] # v0, v1,...vf
 
