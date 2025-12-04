@@ -51,7 +51,7 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                             ("f X",0xF029,"Set I = location of sprite for digit Vx."),
                             ("b X",0xF033,"Store BCD representation of Vx in memory locations I, I+1, and I+2."),
                             ("m X",0xF055,"Store registers V0 through Vx in memory starting at location I."),
-                            ("X m",0xF055,"Read registers V0 through Vx from memory starting at location I.")),
+                            ("X m",0xF065,"Read registers V0 through Vx from memory starting at location I.")),
 
 
 
