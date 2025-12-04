@@ -49,7 +49,6 @@ class Spriter:
                 if is_holding:
                     x,y = pygame.mouse.get_pos()
                     if (x>=place_x and x<=place_x+self.size) and (y>=place_y and y<=place_y+self.size):
-                        print(hold_state)
                         self.display_matrix[j][i] = hold_state
 
                 pygame.draw.rect(self.screen,
@@ -72,7 +71,7 @@ class App:
         self.screen.fill(FILL_COLOR)
 
         is_holding = False
-        hold_state = 0
+        state = 1 # draw or erase
 
         while self.running:
             for evs in pygame.event.get():
@@ -81,19 +80,18 @@ class App:
                 
                 elif evs.type == pygame.MOUSEBUTTONDOWN:
                     is_holding = True
-
-                    if evs.button == 1: # left button
-                        hold_state = 1
-                    elif evs.button == 3: # right button
-                        hold_state = 0
-
-                       
                 
+                elif evs.type == pygame.KEYDOWN:
+                    if evs.key == pygame.K_d:
+                        state = 1
+                    elif evs.key == pygame.K_c:
+                        state = 0
+
                 elif evs.type == pygame.MOUSEBUTTONUP:
                         is_holding = False
 
 
-            self.spriter.update(is_holding,hold_state)
+            self.spriter.update(is_holding,state)
 
             pygame.display.update()
         
