@@ -38,7 +38,7 @@ class Spriter:
 
         self.display_matrix = [[0 for _ in range(self.row_count)] for _ in range(self.col_count)]
     
-    def update(self,is_holding_left : bool) -> None:
+    def update(self,is_holding : bool, hold_state: int) -> None:
 
         for j in range(len(self.display_matrix)):
             for i in range(len(self.display_matrix[j])):
@@ -46,10 +46,11 @@ class Spriter:
                 place_x = self.x+i*self.size
                 place_y = self.y+j*self.size
 
-                if is_holding_left:
+                if is_holding:
                     x,y = pygame.mouse.get_pos()
                     if (x>=place_x and x<=place_x+self.size) and (y>=place_y and y<=place_y+self.size):
-                        self.display_matrix[j][i] = 1
+                        print(hold_state)
+                        self.display_matrix[j][i] = hold_state
 
                 pygame.draw.rect(self.screen,
                                  SPRITE_FILL_COLOR_1 if self.display_matrix[j][i]==1 else SPRITE_FILL_COLOR_0,
@@ -70,7 +71,8 @@ class App:
     def mainloop(self) -> None:
         self.screen.fill(FILL_COLOR)
 
-        is_holding_left = False
+        is_holding = False
+        hold_state = 0
 
         while self.running:
             for evs in pygame.event.get():
@@ -78,16 +80,20 @@ class App:
                     self.running = False
                 
                 elif evs.type == pygame.MOUSEBUTTONDOWN:
+                    is_holding = True
+
                     if evs.button == 1: # left button
-                        is_holding_left = True
+                        hold_state = 1
+                    elif evs.button == 3: # right button
+                        hold_state = 0
+
                        
                 
                 elif evs.type == pygame.MOUSEBUTTONUP:
-                    if evs.button == 1:
-                        is_holding_left = False
+                        is_holding = False
 
 
-            self.spriter.update(is_holding_left)
+            self.spriter.update(is_holding,hold_state)
 
             pygame.display.update()
         
