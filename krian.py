@@ -9,7 +9,9 @@ TITLE = "Krian - Chip8 Sprite Kreator"
 
 # Colors
 FILL_COLOR = (0,0,0)
-SPRITE_FILL_COLOR = (255,255,255)
+SPRITE_FILL_COLOR_0 = (255,255,255)
+SPRITE_FILL_COLOR_1 = (255,0,0)
+
 
 
 ########################
@@ -34,19 +36,25 @@ class Spriter:
         # For a standard CHIP8, 8x15 is the max.
         # while the character sprites are 8x5
 
-        self.display_matrix = [[0]*self.row_count]*self.col_count
+        self.display_matrix = [[0 for _ in range(self.row_count)] for _ in range(self.col_count)]
     
     def update(self,is_holding_left : bool) -> None:
-        if is_holding_left:
-            _pos = pygame.mouse.get_pos()
-             
-             # check if lies inside any cell
 
         for j in range(len(self.display_matrix)):
             for i in range(len(self.display_matrix[j])):
-                pygame.draw.rect(self.screen,SPRITE_FILL_COLOR,
-                                 (self.x+i*self.size,self.y+j*self.size, self.size, self.size),
-                                 width=1)
+            
+                place_x = self.x+i*self.size
+                place_y = self.y+j*self.size
+
+                if is_holding_left:
+                    x,y = pygame.mouse.get_pos()
+                    if (x>=place_x and x<=place_x+self.size) and (y>=place_y and y<=place_y+self.size):
+                        self.display_matrix[j][i] = 1
+
+                pygame.draw.rect(self.screen,
+                                 SPRITE_FILL_COLOR_1 if self.display_matrix[j][i]==1 else SPRITE_FILL_COLOR_0,
+                                 (place_x,place_y, self.size, self.size),
+                                 width=0)
     
 
 class App:
@@ -72,6 +80,7 @@ class App:
                 elif evs.type == pygame.MOUSEBUTTONDOWN:
                     if evs.button == 1: # left button
                         is_holding_left = True
+                       
                 
                 elif evs.type == pygame.MOUSEBUTTONUP:
                     if evs.button == 1:
