@@ -1,4 +1,7 @@
 import pygame
+import tkinter as tk
+from tkinter import filedialog
+from tkinter.messagebox import showerror,showinfo
 
 ######################
 # Some constants
@@ -79,6 +82,42 @@ class App:
                 (WIDTH - _surface.get_width())//2,
                 (HEIGHT-_surface.get_height()*(i+1))
             ))
+    
+    def data_to_bytes(self) -> bytearray:
+        data = bytearray()
+        
+        buffer = ""
+
+        for j in range(len(self.spriter.display_matrix)):
+            for i in range(len(self.spriter.display_matrix[j])):
+                buffer += str(self.spriter.display_matrix[j][i])
+
+                if len(buffer)==8:
+                    data.append(int(buffer,base=2))
+                    buffer = ""
+        return data
+
+    def save_file_dialog(self) -> None:
+        root = tk.Tk()
+        root.withdraw() 
+    
+        file = filedialog.asksaveasfile(
+            initialdir="/",
+            title="Select file to save",
+            defaultextension=".kri_ch8",
+            filetypes=(
+                ("Krian- CH8", "*.kri_ch8"),
+                ("bin", "*.bin"),
+            ),
+            mode = 'wb'
+        )
+
+        if file:
+            file.write(self.data_to_bytes())
+            file.close()
+            showinfo("Sucess","File is created")
+        else:
+            showerror("Error","File Couldn't be open")
 
 
     
@@ -101,6 +140,8 @@ class App:
                         state = 1
                     elif evs.key == pygame.K_c:
                         state = 0
+                    elif evs.key == pygame.K_s:
+                        self.save_file_dialog()
 
                 elif evs.type == pygame.MOUSEBUTTONUP:
                         is_holding = False
