@@ -11,6 +11,7 @@ TITLE = "Krian - Chip8 Sprite Kreator"
 FILL_COLOR = (0,0,0)
 SPRITE_FILL_COLOR_0 = (255,255,255)
 SPRITE_FILL_COLOR_1 = (255,0,0)
+FONT_COLOR = (255,0,255)
 
 
 
@@ -66,14 +67,28 @@ class App:
         pygame.display.set_caption(TITLE)
         self.running = True
 
+        self.defaultFont:pygame.font.Font = pygame.font.SysFont("Times",20)
+    
+    def show_texts(self,texts:list[str]) -> None:
+        for i in range(len(texts)):
+            _surface = self.defaultFont.render(texts[i],
+                                                     0,
+                                                     FONT_COLOR,
+                                                     )
+            self.screen.blit(_surface,(
+                (WIDTH - _surface.get_width())//2,
+                (HEIGHT-_surface.get_height()*(i+1))
+            ))
+
+
     
     def mainloop(self) -> None:
-        self.screen.fill(FILL_COLOR)
 
         is_holding = False
         state = 1 # draw or erase
 
         while self.running:
+            self.screen.fill(FILL_COLOR)
             for evs in pygame.event.get():
                 if evs.type == pygame.QUIT:
                     self.running = False
@@ -92,6 +107,10 @@ class App:
 
 
             self.spriter.update(is_holding,state)
+            
+            # show infos
+            self.show_texts([f"Current state:{"Draw" if state else "Clear"}. Use d/c keys to toggle",
+                             "Press 's' to save"])
 
             pygame.display.update()
         
@@ -101,6 +120,7 @@ def init() -> None:
     '''Initializes everything'''
     pygame.init()
     pygame.display.init()
+    pygame.font.init()
 
 def deinit() -> None:
     '''Deinitialize everything'''
