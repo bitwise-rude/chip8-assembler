@@ -6,6 +6,7 @@ from tkinter.messagebox import showerror,showinfo
 ######################
 # Some constants
 ######################
+
 WIDTH = 800
 HEIGHT = 500
 TITLE = "Krian - Chip8 Sprite Kreator"

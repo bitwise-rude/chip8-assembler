@@ -13,7 +13,7 @@ class Token:
     type:str
 
 class ErrorManager:
-    '''Shows Error, its type and description neatly'''
+    '''Stores Error, its type and description neatly and displays them as well.'''
     def __init__(self,source:list[str]):
         self.source = source
         self.errors = []
@@ -22,14 +22,13 @@ class ErrorManager:
                   name:str,
                   token:Token,
                   description:str) -> None:
-        '''Adds error to an error buffer'''
+        '''Adds error to an error buffer which can later be printed.'''
         
         error_message = f"""
             {name} at {token.line_no+1}:{token.char_index_start+1}"""
-        
         line_of_error = self.source[token.line_no]
-
         line_description = " " * (token.char_index_end)
+
         error_shower = "^" * (token.char_index_end - token.char_index_start+1)
 
         self.errors.append(f'''{error_message}
@@ -57,7 +56,7 @@ class ErrorManager:
 
 class Tokenizer:
     '''
-        Tokenizer or Lexer produces lexemes or Toknes
+        Tokenizer or Lexer produces lexemes or Tokens
         which are assembler interpretation of the code
         and its attributes
     '''
@@ -214,7 +213,7 @@ class Tokenizer:
             line_count +=1
 
 class Parser:
-    '''Parses tokens into suitable machine codes'''
+    '''Parses tokens into suitable machine codes, so its a code gen too'''
 
     def __init__(self,tokens:list[Token],error_manager:ErrorManager) -> None:
         self.tokens = tokens
@@ -242,9 +241,7 @@ class Parser:
             self.generated_code.append(ins & 0xFF)
             self.current_address += 1
 
-        
-
-
+    
     def parse(self)->None:
         '''
             Main parsing method
@@ -287,14 +284,12 @@ class Parser:
                     # I call the following way, the Ks way of assembling 
                     i = 0
                     param_counter = 0
-                    print(_opcode)
                     result = 0x0000 | _opcode
 
                     params = fullparams.copy()
             
                     while i < len(_template): 
                         k = _template[i]
-                        print(params)
                         if (k == "A"):  # for address
                             # for A we need (nnn)
                             if (len(params)>0):
@@ -309,7 +304,6 @@ class Parser:
                                     else:
                                         _l = _p.name.split(" ")[1]
                                         self.unknown_labels[_l].append(len(self.generated_code))
-                                     
                                 else:
                                     to_skip = True
                                     break
@@ -354,9 +348,6 @@ class Parser:
                             else:
                                 to_skip = True
                                 break
-                            
-                            
-
                             
                         elif (k == "K"):
                             # K is a single byte
@@ -418,7 +409,7 @@ class Parser:
                           
 
                 if tkn.name == "db":
-                    # define bytes thing
+                    # define bytes
                     params = self._get_param(tkn_counter)
                     
                     for param in params:
@@ -472,21 +463,7 @@ class Parser:
                 param_token.name = str(int(param_token.name, base =2))
 
             params.append(param_token)
-            
-            # if param_token.type == "NUMBER" or param_token.type == "REGISTER":
-            #     params.append(param_token)
-            # else:
-            #     self.error_manager.add_error(f"Invalid Paramter",
-            #                                 param_token,
-            #                                 f"'{param_token.name}' isn't a valid parameter")
-            #     param_token.name = "1"
-            #     param_token.type = "NUMBER"
-            #     params.append(param_token)
-
-            # TODO: varaible checking do  
-            # TODO: ERROR
-       
-            
+           
             i += 1
 
         return params
@@ -506,7 +483,7 @@ def read_file_contents(file_name : str) -> list[str]:
         return file_handler.readlines()
     except FileNotFoundError:
         show_err_and_quit("The source file wasn't found")
-    #handle other erros as well
+    #TODO handle other erros as well
 
 def save_in_file(file_name:str, data:bytearray) -> None:
     ''' Saves the byte array in the file'''
@@ -528,24 +505,18 @@ error_manager = ErrorManager(source_lines)
 # tokenizer (first pass)
 tokenizer = Tokenizer(error_manager)
 tokenizer.tokenize()
-print(tokenizer.tokens)
-
 # show errors in tokenizing phase
-if error_manager.show_errors():
-    show_err_and_quit("Syntax Error")
+if error_manager.show_errors(): show_err_and_quit("Syntax Error")
 
 # parser (second pass)
 parser = Parser(tokenizer.tokens,error_manager)
 parser.parse()
 
-if error_manager.show_errors():
-    show_err_and_quit("Parsing Error")
+if error_manager.show_errors(): show_err_and_quit("Parsing Error")
 print(parser.generated_code.hex(sep="-"))
 
 # save it out in a file
-if (len(sys.argv)>2):
-    save_file = sys.argv[2]
-else:
-    save_file = "out.bin"
+if (len(sys.argv)>2): save_file = sys.argv[2]
+else: save_file = "out.bin"
 
 save_in_file(save_file,parser.generated_code)
