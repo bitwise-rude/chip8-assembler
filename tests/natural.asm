@@ -8,7 +8,7 @@ ld v1, 14
 ld v2, 1
 
 ; how many second  to hold, 60 means 1 second
-ld v3, 120
+ld v3, 60
 
 
 loop:
@@ -16,6 +16,9 @@ loop:
     cls
     drw v0,v1,5
     add v2, 1
+
+    sne v2,15
+    call reset
 
     call sleep
 
@@ -29,3 +32,6 @@ sleep:
         jmp loop2
     ret
 
+reset:
+    ld v2, 1
+    ret

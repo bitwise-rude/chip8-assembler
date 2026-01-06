@@ -39,7 +39,8 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                 "se":       (("X K", 0x3000,     "Skip next instruction if Vx = kk."),
                              ("X X",0x5000, "Skip next ins if vx = xy")),
 
-                "sne":       (("X K", 0x4000,     "Skip next instruction if Vx != kk."),)    ,
+                "sne":       (("X K", 0x4000,     "Skip next instruction if Vx != kk."),
+                              ("X X",0x9000,"Skip next instruction if Vx != Vy."))    ,
 
                 "ld":     (("X K",0x6000,"Set Vx = kk."),
                             ("X X",0x8000,"Set vx = vy"),
@@ -68,7 +69,7 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                 "shr":     (("X X",0x8006,"Set Vx = Vx SHR 1."),),
                 "subn":    ( ("X X",0x8007,"Set Vx = Vy - Vx, set VF = NOT borrow."),),
                 "shl":     ( ("X X",0x800e,"Set Vx = Vx SHL 1."),),
-               "sne":      (("X X",0x9000,"Skip next instruction if Vx != Vy."),),
+               
                 "jumpa":      (("A",0xB000,"Jump to location nnn + V0."),),
                 "rnd":      (("X K",0xC000,"Set Vx = random byte AND kk."),),
                 "drw":      (("X X N",0xD000,"Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision."),),
