@@ -455,11 +455,11 @@ class Parser:
                     param_token.type = "LABEL"
                 
                 # TODO: make more robust
-                else:
-                    if len(param_token.name) >1:
-                        self.error_manager.add_error(f"Unknown Label",
-                                            param_token,
-                                            f"'{param_token.name}' isn't a known label")
+                # else:
+                #     if len(param_token.name) >1:
+                #         self.error_manager.add_error(f"Unknown Label",
+                #                             param_token,
+                #                             f"'{param_token.name}' isn't a known label")
             
             elif param_token.type == "HEX":
                 param_token.type ="NUMBER"
