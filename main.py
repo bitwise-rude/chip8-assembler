@@ -96,7 +96,7 @@ class Tokenizer:
                         character_count = len(line)
                         continue
                 
-                    elif tkn_name == "_SPACE": # spaces
+                    elif tkn_name in ("_SPACE", "_TAB"): # spaces AND tabs
                         # skip the character
                         character_count += 1
                         continue
