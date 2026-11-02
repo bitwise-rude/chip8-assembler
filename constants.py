@@ -33,6 +33,9 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                 "ret":      (("", 0x00EE,       "Return from a subroutine."),)  ,
 
                 "jmp" :      (("A",0x1000,      "Jump to location nnn."),)      ,
+
+                "jp" :      (("A",0x1000,      "Jump to location nnn."),)      , # add correct syntax for jumping 
+
                 
                 "call":    (( "A",0x2000,       "Call subroutine at nnn."),)      ,
 

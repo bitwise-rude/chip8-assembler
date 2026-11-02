@@ -79,12 +79,13 @@ class Tokenizer:
 
             while character_count < len(line):
                 character = line[character_count]
-
+                if character == "\t": # add support for tab indents
+                    character_count += 1
+                    continue
                 # single character keywords check 
                 if character in SINGLE_CHARACTER_TOKENS.keys():
                     # special cases are comments and spaces which need to be discarded
                     tkn_name = SINGLE_CHARACTER_TOKENS[character]
-
                     if tkn_name == "_COMMENT": # comments
                         #skip the whole line
                         self.tokens.append(Token("_NEW_LINE",
