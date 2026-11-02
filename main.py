@@ -14,7 +14,7 @@ class Token:
 
 class ErrorManager:
     '''Stores Error, its type and description neatly and displays them as well.'''
-    def __init__(self,source:list[str]):
+    def __init__(self,source):
         self.source = source
         self.errors = []
 
@@ -72,19 +72,18 @@ class Tokenizer:
         '''Main tokenizing method'''
         # go through each line
         line_count = 0
+        total_length = len(self.source_lines)
     
-        while line_count < len(self.source_lines):
+        while line_count < total_length:
             line = self.source_lines[line_count].lower() # making case insensitive
             character_count = 0
+            line_length = len(line)
 
-            while character_count < len(line):
+            while character_count < line_length:
                 character = line[character_count]
-                if character == "\t": # add support for tab indents
-                    character_count += 1
-                    continue
-                # single character keywords check 
+
                 if character in SINGLE_CHARACTER_TOKENS.keys():
-                    # special cases are comments and spaces which need to be discarded
+                    # special cases are comments, spaces and tabs which need to be discarded
                     tkn_name = SINGLE_CHARACTER_TOKENS[character]
                     if tkn_name == "_COMMENT": # comments
                         #skip the whole line
@@ -97,7 +96,7 @@ class Tokenizer:
                         character_count = len(line)
                         continue
                 
-                    elif tkn_name == "_SPACE": # spaces
+                    elif tkn_name == "_SPACE" or tkn_name == "_TAB": # spaces and tabs
                         # skip the character
                         character_count += 1
                         continue
@@ -106,7 +105,7 @@ class Tokenizer:
                                        line_count,
                                        character_count,
                                        character_count,
-                                       "KEYWORD")) # since single character
+                                       "KEYWORD")) # single character = KEYWORD
                       
                 # multi character check and single character names check
                 elif character in VALID_CHARACTERS:
@@ -274,6 +273,7 @@ class Parser:
 
                 # check for opcode based on the parameters name
                 opcodes_data = INSTRUCTIONS[tkn.name]
+                result = 0x0000 
 
                 for opcode_data in opcodes_data:
                     _template = opcode_data[0].split()
@@ -484,7 +484,7 @@ def show_err_and_quit(err:str):
     print("\tch8asm:\nError:\t",err)
     quit()
 
-def read_file_contents(file_name : str) -> list[str]:
+def read_file_contents(file_name : str):
     '''Reads and returns the file contents'''
     try:
         file_handler = open(file_name,'r')

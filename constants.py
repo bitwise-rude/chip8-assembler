@@ -4,6 +4,7 @@ import string
 # tokens
 
 SINGLE_CHARACTER_TOKENS  = {    "\n":"_NEW_LINE",
+                                "\t":"_TAB",
                                 " " :"_SPACE",
                                 ";" : "_COMMENT",
                                 "," : "_COMMA",
