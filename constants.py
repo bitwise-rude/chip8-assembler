@@ -78,7 +78,7 @@ INSTRUCTIONS = {'cls':      (("",0x00E0,        "Clear the display."),)     ,
                 "rnd":      (("X K",0xC000,"Set Vx = random byte AND kk."),),
                 "drw":      (("X X N",0xD000,"Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision."),),
                 "skp":      (("X",0xE09E,"Skip next instruction if key with the value of Vx is pressed."),),
-                "sknp":      (("X",0xE091,"Skip next instruction if key with the value of Vx is not pressed."),),
+                "sknp":      (("X",0xE0A1,"Skip next instruction if key with the value of Vx is not pressed."),),
                 
                 }
 
