@@ -1,11 +1,10 @@
-ld v0, 30
-ld v1, 14
+ld v0, 5
+ld v1, 5
+
+ld i, char
+drw v0, v1, 5
 
 loop:
-    ld i, SPRITE
-    cls
-    drw v0, v1, 5
-    jmp loop
+jmp loop
 
-SPRITE:
-    db 255,255,255,255,255
+char: sprite tests/test

@@ -12,7 +12,7 @@ SINGLE_CHARACTER_TOKENS  = {    "\n":"_NEW_LINE",
                             }
 
 VALID_NUMBERS = "0123456789"
-VALID_CHARACTERS = string.ascii_lowercase + "_"
+VALID_CHARACTERS = string.ascii_lowercase + "_" + "/"
 
 HEX_PREFIX = "$"
 BIN_PREFIX = "%"

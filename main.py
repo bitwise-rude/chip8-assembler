@@ -409,7 +409,7 @@ class Parser:
                             self.generated_code[index+1] |= ((self.current_address & 0x0ff))
                           
 
-                if tkn.name == "db":
+                elif tkn.name == "db":
                     # define bytes
                     params = self._get_param(tkn_counter)
                     
@@ -420,6 +420,18 @@ class Parser:
                             self.error_manager.add_error("Define Bytes failed",
                                                          param,
                                                          f'{param.name} cannot be defined in the memory')
+                elif tkn.name == "sprite":
+                    # define bytes
+                    params = self._get_param(tkn_counter)
+                    if params and params[0].type == "NAME":
+                        with open(params[0].name + ".kri_ch8", 'rb') as file1:
+                            contents = file1.read()
+                            for c in contents:
+                                self.add_ins(c,isSingleByte=True)
+                    else:
+                        self.error_manager.add_error("Invalid use of sprite",
+                                                         params[0],
+                                                         f'{params[0].name} needs the filename')
     
             tkn_counter +=1
         
